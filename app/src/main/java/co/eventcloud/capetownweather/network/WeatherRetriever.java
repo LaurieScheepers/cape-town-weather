@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import co.eventcloud.capetownweather.BuildConfig;
-import co.eventcloud.capetownweather.weather.model.WeatherInfo;
+import co.eventcloud.capetownweather.weather.model.DailyWeatherInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -32,7 +32,7 @@ public class WeatherRetriever {
                                   @Nullable String units,
                                   @Nullable Integer delay,
                                   @Nullable Float chaos,
-                                  @NonNull Callback<WeatherInfo> callback) {
+                                  @NonNull Callback<DailyWeatherInfo> callback) {
 
         // Create a logging interceptor (to show detailed logs about the request and response).
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -53,7 +53,7 @@ public class WeatherRetriever {
         WeatherApi weatherApi = retrofit.create(WeatherApi.class);
 
         // Create the API call
-        Call<WeatherInfo> call = weatherApi.getWeather(BuildConfig.API_KEY, latitude, longitude, units, delay, chaos);
+        Call<DailyWeatherInfo> call = weatherApi.getWeather(BuildConfig.API_KEY, latitude, longitude, units, delay, chaos);
 
         // Make the call asynchronously and notify the callback of the response (which might be a success or error)
         call.enqueue(callback);

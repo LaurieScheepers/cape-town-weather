@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 
 import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.network.WeatherRetriever;
-import co.eventcloud.capetownweather.weather.model.WeatherInfo;
+import co.eventcloud.capetownweather.weather.model.DailyWeatherInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,14 +31,14 @@ public class WeatherService extends IntentService {
         Timber.d("Getting the weather from the API");
 
         // Get Weather from the API
-        WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "si", 0, 0f, new Callback<WeatherInfo>() {
+        WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "si", 0, 0f, new Callback<DailyWeatherInfo>() {
             @Override
-            public void onResponse(Call<WeatherInfo> call, Response<WeatherInfo> response) {
+            public void onResponse(Call<DailyWeatherInfo> call, Response<DailyWeatherInfo> response) {
                 Timber.d("YAY, WE GOT THE WEATHER, MAN!");
             }
 
             @Override
-            public void onFailure(Call<WeatherInfo> call, Throwable t) {
+            public void onFailure(Call<DailyWeatherInfo> call, Throwable t) {
                 Timber.e(t, "OH NO, something went wrong with retrieving the weather");
             }
         });

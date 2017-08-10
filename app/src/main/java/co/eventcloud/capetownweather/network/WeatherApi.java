@@ -1,6 +1,6 @@
 package co.eventcloud.capetownweather.network;
 
-import co.eventcloud.capetownweather.weather.model.WeatherInfo;
+import co.eventcloud.capetownweather.weather.model.DailyWeatherInfo;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -34,11 +34,11 @@ public interface WeatherApi {
      * @return The weather model object containing all the necessary information
      */
     @GET("/forecast/{api_key}/{lat},{lng}")
-    Call<WeatherInfo> getWeather(@Path("api_key") String apiKey,
-                                 @Path("lat") String latitude,
-                                 @Path("lng") String longitude,
-                                 @Query("units") String units,
-                                 @Query("delay") Integer delay,
-                                 @Query("chaos") Float chaos);
+    Call<DailyWeatherInfo> getWeather(@Path("api_key") String apiKey,
+                                      @Path("lat") String latitude,
+                                      @Path("lng") String longitude,
+                                      @Query("units") String units,
+                                      @Query("delay") Integer delay,
+                                      @Query("chaos") Float chaos);
 
 }

@@ -6,8 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import co.eventcloud.capetownweather.weather.WeatherBroadcastReceiver;
 
 /**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
+ * The main activity of the app. This activity has one goal: to display the weather information for Cape Town.
+ *
+ * <p/>
  */
 public class MainActivity extends AppCompatActivity {
 

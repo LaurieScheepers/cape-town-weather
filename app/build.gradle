@@ -24,8 +24,8 @@ android {
 
         buildConfigField("String", "API_URL", '"http://ec-weather-proxy.appspot.com/"')
         buildConfigField("String", "API_KEY", '"29e4a4ce0ec0068b03fe203fa81d457f"')
-        buildConfigField("String", "CAPE_TOWN_LATITUDE", '"-33.9249"')
-        buildConfigField("String", "CAPE_TOWN_LONGITUDE", '"18.4241"')
+        buildConfigField("String", "CAPE_TOWN_LATITUDE", '"-33.924869"')
+        buildConfigField("String", "CAPE_TOWN_LONGITUDE", '"18.424055"')
     }
     buildTypes {
         release {
