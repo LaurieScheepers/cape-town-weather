@@ -1,56 +1,41 @@
-package co.eventcloud.capetownweather.weather.model;
+package co.eventcloud.capetownweather.realm.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-import java.util.Date;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
- * Object describing the Current Weather Info we get back from the API
+ * Realm object describing the info of a day's weather
  *
  * <p/>
  * Created by Laurie on 2017/08/10.
  */
 
-public class CurrentWeatherInfo {
+public class RealmDayInfo extends RealmObject {
 
-    @SerializedName("time")
-    @Expose
-    private Date time;
+    public static final String FIELD_ID = "id";
 
-    @SerializedName("summary")
-    @Expose
+    @PrimaryKey
+    private int id;
+
+    private int time;
+
     private String summary;
 
-    @SerializedName("icon")
-    @Expose
     private String icon;
 
-    @SerializedName("temperature")
-    @Expose
     private Double temperature;
 
-    @SerializedName("apparentTemperature")
-    @Expose
     private Double apparentTemperature;
 
-    @SerializedName("precipProbability")
-    @Expose
-    private Double precipProbability;
-
-    @SerializedName("humidity")
-    @Expose
     private Double humidity;
 
-    @SerializedName("windSpeed")
-    @Expose
     private Double windSpeed;
 
-    public Date getTime() {
+    public int getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(int time) {
         this.time = time;
     }
 
@@ -102,11 +87,11 @@ public class CurrentWeatherInfo {
         this.windSpeed = windSpeed;
     }
 
-    public Double getPrecipProbability() {
-        return precipProbability;
+    public int getId() {
+        return id;
     }
 
-    public void setPrecipProbability(Double precipProbability) {
-        this.precipProbability = precipProbability;
+    public void setId(int id) {
+        this.id = id;
     }
 }

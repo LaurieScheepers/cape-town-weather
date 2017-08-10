@@ -6,23 +6,25 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 /**
- * Object describing the Hourly Weather Info we get back from the API
+ * Object describing the Week's Weather Info we get back from the API. This object contains info about each day's weather
  *
  * <p/>
  * Created by Laurie on 2017/08/10.
  */
 
-public class HourlyWeatherInfo {
+public class WeekWeatherInfo {
 
     @SerializedName("summary")
     @Expose
     private String summary;
+
     @SerializedName("icon")
     @Expose
     private String icon;
+
     @SerializedName("data")
     @Expose
-    private List<HourInfo> data = null;
+    private List<DayInfo> data = null;
 
     public String getSummary() {
         return summary;
@@ -40,11 +42,11 @@ public class HourlyWeatherInfo {
         this.icon = icon;
     }
 
-    public List<HourInfo> getData() {
+    public List<DayInfo> getData() {
         return data;
     }
 
-    public void setData(List<HourInfo> data) {
+    public void setData(List<DayInfo> data) {
         this.data = data;
     }
 }

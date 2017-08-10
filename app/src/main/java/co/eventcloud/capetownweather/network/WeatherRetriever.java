@@ -3,8 +3,14 @@ package co.eventcloud.capetownweather.network;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import java.util.Date;
+
 import co.eventcloud.capetownweather.BuildConfig;
-import co.eventcloud.capetownweather.weather.model.DailyWeatherInfo;
+import co.eventcloud.capetownweather.weather.DateConverter;
+import co.eventcloud.capetownweather.weather.model.WeekWeatherInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -32,7 +38,12 @@ public class WeatherRetriever {
                                   @Nullable String units,
                                   @Nullable Integer delay,
                                   @Nullable Float chaos,
-                                  @NonNull Callback<DailyWeatherInfo> callback) {
+                                  @NonNull Callback<WeekWeatherInfo> callback) {
+
+        // Create the GSON configuration object, with a custom DateConverter class
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new DateConverter())
+                .create();
 
         // Create a logging interceptor (to show detailed logs about the request and response).
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -46,14 +57,14 @@ public class WeatherRetriever {
         Retrofit retrofit = new Retrofit.Builder()
                 .client(client)
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         // Create the API object
         WeatherApi weatherApi = retrofit.create(WeatherApi.class);
 
         // Create the API call
-        Call<DailyWeatherInfo> call = weatherApi.getWeather(BuildConfig.API_KEY, latitude, longitude, units, delay, chaos);
+        Call<WeekWeatherInfo> call = weatherApi.getWeather(BuildConfig.API_KEY, latitude, longitude, units, delay, chaos);
 
         // Make the call asynchronously and notify the callback of the response (which might be a success or error)
         call.enqueue(callback);

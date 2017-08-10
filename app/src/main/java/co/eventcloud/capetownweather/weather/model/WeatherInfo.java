@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The weather overview info POJO. This contains the current weather information, hourlyWeatherInfo weather updates as well as dailyWeatherInfo updates.
+ * The weather overview info POJO. This contains the current weather information, dayWeatherInfo weather updates as well as weekWeatherInfo updates.
  *
  * <p/>
  * Created by Laurie on 2017/08/10.
@@ -15,12 +15,12 @@ public class WeatherInfo {
     @SerializedName("currentWeatherInfo")
     @Expose
     private CurrentWeatherInfo currentWeatherInfo;
-    @SerializedName("hourlyWeatherInfo")
+    @SerializedName("dayWeatherInfo")
     @Expose
-    private HourlyWeatherInfo hourlyWeatherInfo;
-    @SerializedName("dailyWeatherInfo")
+    private DayWeatherInfo dayWeatherInfo;
+    @SerializedName("weekWeatherInfo")
     @Expose
-    private DailyWeatherInfo dailyWeatherInfo;
+    private WeekWeatherInfo weekWeatherInfo;
 
     public CurrentWeatherInfo getCurrentWeatherInfo() {
         return currentWeatherInfo;
@@ -30,19 +30,19 @@ public class WeatherInfo {
         this.currentWeatherInfo = currently;
     }
 
-    public HourlyWeatherInfo getHourlyWeatherInfo() {
-        return hourlyWeatherInfo;
+    public DayWeatherInfo getDayWeatherInfo() {
+        return dayWeatherInfo;
     }
 
-    public void setHourlyWeatherInfo(HourlyWeatherInfo hourly) {
-        this.hourlyWeatherInfo = hourly;
+    public void setDayWeatherInfo(DayWeatherInfo hourly) {
+        this.dayWeatherInfo = hourly;
     }
 
-    public DailyWeatherInfo getDailyWeatherInfo() {
-        return dailyWeatherInfo;
+    public WeekWeatherInfo getWeekWeatherInfo() {
+        return weekWeatherInfo;
     }
 
-    public void setDailyWeatherInfo(DailyWeatherInfo daily) {
-        this.dailyWeatherInfo = daily;
+    public void setWeekWeatherInfo(WeekWeatherInfo daily) {
+        this.weekWeatherInfo = daily;
     }
 }

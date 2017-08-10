@@ -1,64 +1,45 @@
-package co.eventcloud.capetownweather.weather.model;
+package co.eventcloud.capetownweather.realm.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
-import java.util.Date;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
 /**
- * POJO describing weather info for an hour
+ * Realm object describing the info of an hour's weather
  *
  * <p/>
  * Created by root on 2017/08/10.
  */
 
-public class HourInfo {
+public class RealmHourInfo extends RealmObject {
 
-    @SerializedName("time")
-    @Expose
-    private Date time;
+    public static final String FIELD_ID = "id";
 
-    @SerializedName("summary")
-    @Expose
+    @PrimaryKey
+    private int id;
+
+    private int time;
+
     private String summary;
 
-    @SerializedName("icon")
-    @Expose
     private String icon;
 
-    @SerializedName("temperatureMin")
-    @Expose
     private Double temperatureMin;
 
-    @SerializedName("temperatureMax")
-    @Expose
     private Double temperatureMax;
 
-    @SerializedName("apparentTemperatureMin")
-    @Expose
     private Double apparentTemperatureMin;
 
-    @SerializedName("apparentTemperatureMax")
-    @Expose
     private Double apparentTemperatureMax;
 
-    @SerializedName("humidity")
-    @Expose
     private Double humidity;
 
-    @SerializedName("precipProbability")
-    @Expose
-    private Double precipProbability;
-
-    @SerializedName("windSpeed")
-    @Expose
     private Double windSpeed;
 
-    public Date getTime() {
+    public int getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(int time) {
         this.time = time;
     }
 
@@ -124,13 +105,5 @@ public class HourInfo {
 
     public void setWindSpeed(Double windSpeed) {
         this.windSpeed = windSpeed;
-    }
-
-    public Double getPrecipProbability() {
-        return precipProbability;
-    }
-
-    public void setPrecipProbability(Double precipProbability) {
-        this.precipProbability = precipProbability;
     }
 }

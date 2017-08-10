@@ -3,6 +3,8 @@ package co.eventcloud.capetownweather.weather.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Date;
+
 /**
  * POJO describing the weather info of a day
  *
@@ -14,7 +16,7 @@ public class DayInfo {
 
     @SerializedName("time")
     @Expose
-    private Integer time;
+    private Date time;
 
     @SerializedName("summary")
     @Expose
@@ -23,18 +25,6 @@ public class DayInfo {
     @SerializedName("icon")
     @Expose
     private String icon;
-
-    @SerializedName("precipIntensity")
-    @Expose
-    private Double precipIntensity;
-
-    @SerializedName("precipProbability")
-    @Expose
-    private Double precipProbability;
-
-    @SerializedName("precipType")
-    @Expose
-    private String precipType;
 
     @SerializedName("temperature")
     @Expose
@@ -48,15 +38,19 @@ public class DayInfo {
     @Expose
     private Double humidity;
 
+    @SerializedName("precipProbability")
+    @Expose
+    private Double precipProbability;
+
     @SerializedName("windSpeed")
     @Expose
     private Double windSpeed;
 
-    public Integer getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(Integer time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
@@ -106,5 +100,13 @@ public class DayInfo {
 
     public void setWindSpeed(Double windSpeed) {
         this.windSpeed = windSpeed;
+    }
+
+    public Double getPrecipProbability() {
+        return precipProbability;
+    }
+
+    public void setPrecipProbability(Double precipProbability) {
+        this.precipProbability = precipProbability;
     }
 }

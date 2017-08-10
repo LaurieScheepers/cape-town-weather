@@ -2,11 +2,12 @@ package co.eventcloud.capetownweather.weather;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.network.WeatherRetriever;
-import co.eventcloud.capetownweather.weather.model.DailyWeatherInfo;
+import co.eventcloud.capetownweather.weather.model.WeekWeatherInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -30,20 +31,22 @@ public class WeatherService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         Timber.d("Getting the weather from the API");
 
-        // Get Weather from the API
-        WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "si", 0, 0f, new Callback<DailyWeatherInfo>() {
-            @Override
-            public void onResponse(Call<DailyWeatherInfo> call, Response<DailyWeatherInfo> response) {
-                Timber.d("YAY, WE GOT THE WEATHER, MAN!");
-            }
+        if (intent != null) {
+            // Get Weather from the API
+            WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "si", 0, 0f, new Callback<WeekWeatherInfo>() {
+                @Override
+                public void onResponse(@NonNull Call<WeekWeatherInfo> call, @NonNull Response<WeekWeatherInfo> response) {
+                    Timber.d("YAY, WE GOT THE WEATHER, MAN!");
+                }
 
-            @Override
-            public void onFailure(Call<DailyWeatherInfo> call, Throwable t) {
-                Timber.e(t, "OH NO, something went wrong with retrieving the weather");
-            }
-        });
+                @Override
+                public void onFailure(@NonNull Call<WeekWeatherInfo> call, @NonNull Throwable t) {
+                    Timber.e(t, "OH NO, something went wrong with retrieving the weather");
+                }
+            });
 
-        // Pass the intent back to release the wake lock
-        WeatherBroadcastReceiver.completeWakefulIntent(intent);
+            // Pass the intent back to release the wake lock
+            WeatherBroadcastReceiver.completeWakefulIntent(intent);
+        }
     }
 }
