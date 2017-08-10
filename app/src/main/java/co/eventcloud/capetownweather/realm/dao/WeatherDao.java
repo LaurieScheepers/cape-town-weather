@@ -6,9 +6,13 @@ import java.util.List;
 
 import co.eventcloud.capetownweather.realm.model.RealmCurrentWeatherInfo;
 import co.eventcloud.capetownweather.realm.model.RealmDayInfo;
+import co.eventcloud.capetownweather.realm.model.RealmDayWeatherInfo;
+import co.eventcloud.capetownweather.realm.model.RealmHourInfo;
 import co.eventcloud.capetownweather.realm.model.RealmWeekWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.CurrentWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.DayInfo;
+import co.eventcloud.capetownweather.weather.model.DayWeatherInfo;
+import co.eventcloud.capetownweather.weather.model.HourInfo;
 import co.eventcloud.capetownweather.weather.model.WeekWeatherInfo;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -68,7 +72,7 @@ public class WeatherDao {
         realmDailyWeatherInfo.setSummary(weekWeatherInfo.getSummary());
         realmDailyWeatherInfo.setIcon(weekWeatherInfo.getIcon());
 
-        RealmList<RealmDayInfo> realmDayInfoRealmList = new RealmList<>();
+        RealmList<RealmDayInfo> realmDayInfoList = new RealmList<>();
 
         List<DayInfo> dailyWeatherInfoList = weekWeatherInfo.getData();
 
@@ -86,12 +90,12 @@ public class WeatherDao {
             realmDayInfo.setApparentTemperature(info.getApparentTemperature());
             realmDayInfo.setHumidity(info.getHumidity());
 
-            realmDayInfoRealmList.add(realmDayInfo);
+            realmDayInfoList.add(realmDayInfo);
 
             id++;
         }
 
-        realmDailyWeatherInfo.setData(realmDayInfoRealmList);
+        realmDailyWeatherInfo.setData(realmDayInfoList);
 
         realm.executeTransaction(new Realm.Transaction() {
             @Override
@@ -109,7 +113,53 @@ public class WeatherDao {
         return realmWeekWeatherInfo;
     }
 
-//    public static void saveRealmDayWeatherInfo(@NonNull DayWeatherInfo dayWeatherInfo) {
-//        final Realm realm = Realm.getDefaultInstance();
-//    }
+    public static void saveRealmDayWeatherInfo(@NonNull DayWeatherInfo dayWeatherInfo) {
+        final Realm realm = Realm.getDefaultInstance();
+
+        final RealmDayWeatherInfo realmDayWeatherInfo = new RealmDayWeatherInfo();
+
+        realmDayWeatherInfo.setId(0); // Set id as 0 - there should always only be one RealmDayWeatherInfo object in the db
+        realmDayWeatherInfo.setSummary(dayWeatherInfo.getSummary());
+        realmDayWeatherInfo.setIcon(dayWeatherInfo.getIcon());
+
+        RealmList<RealmHourInfo> realmHourInfoList = new RealmList<>();
+
+        List<HourInfo> hourInfoList = dayWeatherInfo.getData();
+
+        int id = 0;
+
+        for (HourInfo info : hourInfoList) {
+            RealmHourInfo realmHourInfo = new RealmHourInfo();
+
+            realmHourInfo.setId(id);
+            realmHourInfo.setIcon(info.getIcon());
+            realmHourInfo.setSummary(info.getSummary());
+            realmHourInfo.setHumidity(info.getHumidity());
+            realmHourInfo.setApparentTemperatureMax(info.getApparentTemperatureMax());
+            realmHourInfo.setApparentTemperatureMin(info.getApparentTemperatureMin());
+            realmHourInfo.setTemperatureMax(info.getTemperatureMax());
+            realmHourInfo.setTemperatureMin(info.getTemperatureMin());
+            realmHourInfo.setTime((int) (info.getTime().getTime() / 1000));
+            realmHourInfo.setWindSpeed(info.getWindSpeed());
+
+            realmHourInfoList.add(realmHourInfo);
+        }
+
+        realmDayWeatherInfo.setData(realmHourInfoList);
+
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                realm.copyToRealmOrUpdate(realmDayWeatherInfo);
+            }
+        });
+
+        realm.close();
+    }
+
+    public static RealmDayWeatherInfo getDayWeatherInfo(@NonNull Realm realm) {
+        RealmDayWeatherInfo realmDayWeatherInfo = realm.where(RealmDayWeatherInfo.class).findFirst();
+
+        return realmDayWeatherInfo;
+    }
 }

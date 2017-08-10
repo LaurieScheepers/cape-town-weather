@@ -106,4 +106,12 @@ public class RealmHourInfo extends RealmObject {
     public void setWindSpeed(Double windSpeed) {
         this.windSpeed = windSpeed;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }
