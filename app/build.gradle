@@ -1,4 +1,14 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven {
+        url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+    }
+
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 android {
     compileSdkVersion 25
@@ -8,8 +18,14 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
+
+        buildConfigField("String", "API_URL", '"http://ec-weather-proxy.appspot.com/"')
+        buildConfigField("String", "API_KEY", '"29e4a4ce0ec0068b03fe203fa81d457f"')
+        buildConfigField("String", "CAPE_TOWN_LATITUDE", '"-33.9249"')
+        buildConfigField("String", "CAPE_TOWN_LONGITUDE", '"18.4241"')
     }
     buildTypes {
         release {
@@ -27,4 +43,30 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:support-v4:25.3.1'
     testCompile 'junit:junit:4.12'
+
+    // Timber, for logging
+    compile 'com.jakewharton.timber:timber:4.5.1'
+
+    // Stetho, for debugging (use chrome://inspect to see debug info about the app)
+    compile 'com.facebook.stetho:stetho:1.5.0'
+
+    // Stetho-Realm lib. to see Realm data in the chrome inspect tools
+    compile 'com.uphyca:stetho_realm:2.1.0'
+
+    // Realm Adapters, for easy adapters where the data is backed by Realm objects
+    compile 'io.realm:android-adapters:2.1.0'
+
+    // Retrofit, used as an HTTP client
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+
+    // GSON converter, used to serialize to and from JSON
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+
+    // OKHttp logging interceptor, to have detailed logs about API requests and responses
+    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+
+    // Fabric Crashlytics, for online crash reporting
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+        transitive = true;
+    }
 }

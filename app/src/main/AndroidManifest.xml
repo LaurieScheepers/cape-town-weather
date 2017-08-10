@@ -2,13 +2,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="co.eventcloud.capetownweather">
 
+    <!-- Needs internet for API calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Needs boot completed permission to know when to start scheduling the alarm service -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- Needs permission to keep the device awake while launching our background service -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
     <application
+        android:name=".MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- The main activity of this app. This activity is full screen. -->
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -20,6 +32,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- The receiver that will trigger an intent when device has booted. Enabled by default-->
+        <receiver android:name=".alarm.BootCompletedReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- The receiver that will trigger an intent periodically. This is enabled when the "alarm" is set -->
+        <receiver android:name=".weather.WeatherBroadcastReceiver"
+            android:enabled="false">
+        </receiver>
+
+        <!-- The service that handles the syncing of data in the background-->
+        <service
+            android:name=".weather.WeatherService"
+            android:exported="false">
+        </service>
+
+        <!-- Meta data for Fabric (Crashlytics) -->
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="518d54896ade0061cb76cb383683a1143f7aff59"
+            />
+
     </application>
 
 </manifest>
