@@ -3,14 +3,8 @@ package co.eventcloud.capetownweather.network;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.util.Date;
-
 import co.eventcloud.capetownweather.BuildConfig;
-import co.eventcloud.capetownweather.weather.DateConverter;
-import co.eventcloud.capetownweather.weather.model.WeekWeatherInfo;
+import co.eventcloud.capetownweather.weather.model.WeatherInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -31,19 +25,15 @@ public class WeatherRetriever {
 
     /**
      * Asynchronously does an API request to retrieve the weather
-     * @see co.eventcloud.capetownweather.network.WeatherApi#getWeather(String, String, String, String, Integer, Float)
+     * @see co.eventcloud.capetownweather.network.WeatherApi#getWeather(String, String, String, String, String, Integer, Float)
      */
     public static void getWeather(@NonNull String latitude,
                                   @NonNull String longitude,
+                                  @Nullable String exclude,
                                   @Nullable String units,
                                   @Nullable Integer delay,
                                   @Nullable Float chaos,
-                                  @NonNull Callback<WeekWeatherInfo> callback) {
-
-        // Create the GSON configuration object, with a custom DateConverter class
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Date.class, new DateConverter())
-                .create();
+                                  @NonNull Callback<WeatherInfo> callback) {
 
         // Create a logging interceptor (to show detailed logs about the request and response).
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
@@ -57,14 +47,14 @@ public class WeatherRetriever {
         Retrofit retrofit = new Retrofit.Builder()
                 .client(client)
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         // Create the API object
         WeatherApi weatherApi = retrofit.create(WeatherApi.class);
 
         // Create the API call
-        Call<WeekWeatherInfo> call = weatherApi.getWeather(BuildConfig.API_KEY, latitude, longitude, units, delay, chaos);
+        Call<WeatherInfo> call = weatherApi.getWeather(BuildConfig.API_KEY, latitude, longitude, exclude, units, delay, chaos);
 
         // Make the call asynchronously and notify the callback of the response (which might be a success or error)
         call.enqueue(callback);

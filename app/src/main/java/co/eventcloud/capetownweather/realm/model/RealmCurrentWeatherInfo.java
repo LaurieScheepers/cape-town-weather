@@ -31,6 +31,8 @@ public class RealmCurrentWeatherInfo extends RealmObject {
 
     private Double windSpeed;
 
+    private Double precipitationProbability;
+
     public int getId() {
         return id;
     }
@@ -93,5 +95,13 @@ public class RealmCurrentWeatherInfo extends RealmObject {
 
     public void setWindSpeed(Double windSpeed) {
         this.windSpeed = windSpeed;
+    }
+
+    public Double getPrecipitationProbability() {
+        return precipitationProbability;
+    }
+
+    public void setPrecipitationProbability(Double precipitationProbability) {
+        this.precipitationProbability = precipitationProbability;
     }
 }

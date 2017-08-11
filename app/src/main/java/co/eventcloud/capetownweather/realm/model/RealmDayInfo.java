@@ -23,9 +23,13 @@ public class RealmDayInfo extends RealmObject {
 
     private String icon;
 
-    private Double temperature;
+    private Double temperatureMin;
 
-    private Double apparentTemperature;
+    private Double temperatureMax;
+
+    private Double apparentTemperatureMin;
+
+    private Double apparentTemperatureMax;
 
     private Double humidity;
 
@@ -55,22 +59,6 @@ public class RealmDayInfo extends RealmObject {
         this.icon = icon;
     }
 
-    public Double getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
-    }
-
-    public Double getApparentTemperature() {
-        return apparentTemperature;
-    }
-
-    public void setApparentTemperature(Double apparentTemperature) {
-        this.apparentTemperature = apparentTemperature;
-    }
-
     public Double getHumidity() {
         return humidity;
     }
@@ -93,5 +81,37 @@ public class RealmDayInfo extends RealmObject {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Double getTemperatureMin() {
+        return temperatureMin;
+    }
+
+    public void setTemperatureMin(Double temperatureMin) {
+        this.temperatureMin = temperatureMin;
+    }
+
+    public Double getTemperatureMax() {
+        return temperatureMax;
+    }
+
+    public void setTemperatureMax(Double temperatureMax) {
+        this.temperatureMax = temperatureMax;
+    }
+
+    public Double getApparentTemperatureMin() {
+        return apparentTemperatureMin;
+    }
+
+    public void setApparentTemperatureMin(Double apparentTemperatureMin) {
+        this.apparentTemperatureMin = apparentTemperatureMin;
+    }
+
+    public Double getApparentTemperatureMax() {
+        return apparentTemperatureMax;
+    }
+
+    public void setApparentTemperatureMax(Double apparentTemperatureMax) {
+        this.apparentTemperatureMax = apparentTemperatureMax;
     }
 }

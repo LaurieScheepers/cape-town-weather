@@ -3,10 +3,8 @@ package co.eventcloud.capetownweather.weather.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 /**
- * POJO describing the weather info of a day
+ * POJO describing weather info for an hour
  *
  * <p/>
  * Created by root on 2017/08/10.
@@ -16,7 +14,7 @@ public class DayInfo {
 
     @SerializedName("time")
     @Expose
-    private Date time;
+    private int time;
 
     @SerializedName("summary")
     @Expose
@@ -26,13 +24,21 @@ public class DayInfo {
     @Expose
     private String icon;
 
-    @SerializedName("temperature")
+    @SerializedName("temperatureMin")
     @Expose
-    private Double temperature;
+    private Double temperatureMin;
 
-    @SerializedName("apparentTemperature")
+    @SerializedName("temperatureMax")
     @Expose
-    private Double apparentTemperature;
+    private Double temperatureMax;
+
+    @SerializedName("apparentTemperatureMin")
+    @Expose
+    private Double apparentTemperatureMin;
+
+    @SerializedName("apparentTemperatureMax")
+    @Expose
+    private Double apparentTemperatureMax;
 
     @SerializedName("humidity")
     @Expose
@@ -46,11 +52,11 @@ public class DayInfo {
     @Expose
     private Double windSpeed;
 
-    public Date getTime() {
+    public int getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(int time) {
         this.time = time;
     }
 
@@ -70,20 +76,36 @@ public class DayInfo {
         this.icon = icon;
     }
 
-    public Double getTemperature() {
-        return temperature;
+    public Double getTemperatureMin() {
+        return temperatureMin;
     }
 
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
+    public void setTemperatureMin(Double temperatureMin) {
+        this.temperatureMin = temperatureMin;
     }
 
-    public Double getApparentTemperature() {
-        return apparentTemperature;
+    public Double getTemperatureMax() {
+        return temperatureMax;
     }
 
-    public void setApparentTemperature(Double apparentTemperature) {
-        this.apparentTemperature = apparentTemperature;
+    public void setTemperatureMax(Double temperatureMax) {
+        this.temperatureMax = temperatureMax;
+    }
+
+    public Double getApparentTemperatureMin() {
+        return apparentTemperatureMin;
+    }
+
+    public void setApparentTemperatureMin(Double apparentTemperatureMin) {
+        this.apparentTemperatureMin = apparentTemperatureMin;
+    }
+
+    public Double getApparentTemperatureMax() {
+        return apparentTemperatureMax;
+    }
+
+    public void setApparentTemperatureMax(Double apparentTemperatureMax) {
+        this.apparentTemperatureMax = apparentTemperatureMax;
     }
 
     public Double getHumidity() {

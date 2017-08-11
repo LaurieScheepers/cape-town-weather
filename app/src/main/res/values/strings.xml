@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">Cape Town Weather</string>
     <string name="current">Current</string>
+    <string name="now">Now</string>
     <string name="hourly">Hourly</string>
     <string name="daily">Daily</string>
+    <string name="temperature">%1$d ℃</string>
+    <string name="apparentTemperature">Feels like %1$d ℃</string>
+    <string name="humidity">%1$d%%</string>
+    <string name="precipitation">%1$d%%</string>
+    <string name="windSpeed">%1$d km/h</string>
+    <string name="time">%1$s SAST</string>
 </resources>

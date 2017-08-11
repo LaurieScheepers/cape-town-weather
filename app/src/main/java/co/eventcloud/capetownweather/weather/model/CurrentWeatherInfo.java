@@ -3,8 +3,6 @@ package co.eventcloud.capetownweather.weather.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Date;
-
 /**
  * Object describing the Current Weather Info we get back from the API
  *
@@ -16,7 +14,7 @@ public class CurrentWeatherInfo {
 
     @SerializedName("time")
     @Expose
-    private Date time;
+    private int time;
 
     @SerializedName("summary")
     @Expose
@@ -46,11 +44,11 @@ public class CurrentWeatherInfo {
     @Expose
     private Double windSpeed;
 
-    public Date getTime() {
+    public int getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(int time) {
         this.time = time;
     }
 

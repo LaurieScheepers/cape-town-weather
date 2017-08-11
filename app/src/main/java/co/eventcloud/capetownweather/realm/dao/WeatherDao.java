@@ -10,9 +10,9 @@ import co.eventcloud.capetownweather.realm.model.RealmDayWeatherInfo;
 import co.eventcloud.capetownweather.realm.model.RealmHourInfo;
 import co.eventcloud.capetownweather.realm.model.RealmWeekWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.CurrentWeatherInfo;
-import co.eventcloud.capetownweather.weather.model.DayInfo;
-import co.eventcloud.capetownweather.weather.model.DayWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.HourInfo;
+import co.eventcloud.capetownweather.weather.model.DayWeatherInfo;
+import co.eventcloud.capetownweather.weather.model.DayInfo;
 import co.eventcloud.capetownweather.weather.model.WeekWeatherInfo;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -38,9 +38,10 @@ public class WeatherDao {
         realmCurrentWeatherInfo.setApparentTemperature(currentWeatherInfo.getApparentTemperature());
         realmCurrentWeatherInfo.setHumidity(currentWeatherInfo.getHumidity());
         realmCurrentWeatherInfo.setIcon(currentWeatherInfo.getIcon());
+        realmCurrentWeatherInfo.setPrecipitationProbability(currentWeatherInfo.getPrecipProbability());
         realmCurrentWeatherInfo.setSummary(currentWeatherInfo.getSummary());
         realmCurrentWeatherInfo.setTemperature(currentWeatherInfo.getTemperature());
-        realmCurrentWeatherInfo.setTime((int) (currentWeatherInfo.getTime().getTime() / 1000));
+        realmCurrentWeatherInfo.setTime(currentWeatherInfo.getTime());
         realmCurrentWeatherInfo.setWindSpeed(currentWeatherInfo.getWindSpeed());
 
         realm.executeTransaction(new Realm.Transaction() {
@@ -79,15 +80,17 @@ public class WeatherDao {
         int id = 0;
 
         for (DayInfo info : dailyWeatherInfoList) {
-            RealmDayInfo realmDayInfo = new RealmDayInfo();
+            final RealmDayInfo realmDayInfo = new RealmDayInfo();
 
             realmDayInfo.setId(id);
             realmDayInfo.setSummary(info.getSummary());
             realmDayInfo.setIcon(info.getIcon());
             realmDayInfo.setWindSpeed(info.getWindSpeed());
-            realmDayInfo.setTime((int) (info.getTime().getTime() / 1000));
-            realmDayInfo.setTemperature(info.getTemperature());
-            realmDayInfo.setApparentTemperature(info.getApparentTemperature());
+            realmDayInfo.setTime(info.getTime());
+            realmDayInfo.setTemperatureMin(info.getTemperatureMin());
+            realmDayInfo.setTemperatureMax(info.getTemperatureMax());
+            realmDayInfo.setApparentTemperatureMin(info.getApparentTemperatureMin());
+            realmDayInfo.setApparentTemperatureMax(info.getApparentTemperatureMax());
             realmDayInfo.setHumidity(info.getHumidity());
 
             realmDayInfoList.add(realmDayInfo);
@@ -113,7 +116,7 @@ public class WeatherDao {
         return realmWeekWeatherInfo;
     }
 
-    public static void saveRealmDayWeatherInfo(@NonNull DayWeatherInfo dayWeatherInfo) {
+    public static void saveDayWeatherInfo(@NonNull DayWeatherInfo dayWeatherInfo) {
         final Realm realm = Realm.getDefaultInstance();
 
         final RealmDayWeatherInfo realmDayWeatherInfo = new RealmDayWeatherInfo();
@@ -129,20 +132,20 @@ public class WeatherDao {
         int id = 0;
 
         for (HourInfo info : hourInfoList) {
-            RealmHourInfo realmHourInfo = new RealmHourInfo();
+            final RealmHourInfo realmHourInfo = new RealmHourInfo();
 
             realmHourInfo.setId(id);
             realmHourInfo.setIcon(info.getIcon());
             realmHourInfo.setSummary(info.getSummary());
             realmHourInfo.setHumidity(info.getHumidity());
-            realmHourInfo.setApparentTemperatureMax(info.getApparentTemperatureMax());
-            realmHourInfo.setApparentTemperatureMin(info.getApparentTemperatureMin());
-            realmHourInfo.setTemperatureMax(info.getTemperatureMax());
-            realmHourInfo.setTemperatureMin(info.getTemperatureMin());
-            realmHourInfo.setTime((int) (info.getTime().getTime() / 1000));
+            realmHourInfo.setTemperature(info.getTemperature());
+            realmHourInfo.setApparentTemperature(info.getApparentTemperature());
+            realmHourInfo.setTime(info.getTime());
             realmHourInfo.setWindSpeed(info.getWindSpeed());
 
             realmHourInfoList.add(realmHourInfo);
+
+            id++;
         }
 
         realmDayWeatherInfo.setData(realmHourInfoList);

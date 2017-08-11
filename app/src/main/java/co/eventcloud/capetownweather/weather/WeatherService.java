@@ -5,9 +5,13 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.greenrobot.eventbus.EventBus;
+
 import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.network.WeatherRetriever;
-import co.eventcloud.capetownweather.weather.model.WeekWeatherInfo;
+import co.eventcloud.capetownweather.realm.dao.WeatherDao;
+import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
+import co.eventcloud.capetownweather.weather.model.WeatherInfo;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,14 +37,30 @@ public class WeatherService extends IntentService {
 
         if (intent != null) {
             // Get Weather from the API
-            WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "si", 0, 0f, new Callback<WeekWeatherInfo>() {
+            WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", 0, 0f, new Callback<WeatherInfo>() {
                 @Override
-                public void onResponse(@NonNull Call<WeekWeatherInfo> call, @NonNull Response<WeekWeatherInfo> response) {
-                    Timber.d("YAY, WE GOT THE WEATHER, MAN!");
+                public void onResponse(@NonNull Call<WeatherInfo> call, @NonNull Response<WeatherInfo> response) {
+                    if (response.isSuccessful()) {
+                        Timber.d("YAY, WE GOT THE WEATHER, MAN!");
+
+                        WeatherInfo weatherInfo = response.body();
+
+                        if (weatherInfo != null) {
+                            // Save the weather information to the DB
+                            WeatherDao.saveCurrentWeather(weatherInfo.getCurrentWeatherInfo());
+                            WeatherDao.saveWeekWeatherInfo(weatherInfo.getWeekWeatherInfo());
+                            WeatherDao.saveDayWeatherInfo(weatherInfo.getDayWeatherInfo());
+
+                            EventBus.getDefault().postSticky(new WeatherInfoUpdatedEvent());
+                        }
+                    } else {
+                        int statusCode = response.code();
+                        Timber.e("OH NO, something went wrong with retrieving the weather. Status Code = " + statusCode);
+                    }
                 }
 
                 @Override
-                public void onFailure(@NonNull Call<WeekWeatherInfo> call, @NonNull Throwable t) {
+                public void onFailure(@NonNull Call<WeatherInfo> call, @NonNull Throwable t) {
                     Timber.e(t, "OH NO, something went wrong with retrieving the weather");
                 }
             });

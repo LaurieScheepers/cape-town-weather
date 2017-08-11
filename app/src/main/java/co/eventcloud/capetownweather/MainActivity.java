@@ -8,6 +8,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import co.eventcloud.capetownweather.weather.WeatherBroadcastReceiver;
+import co.eventcloud.capetownweather.weather.view.CurrentWeatherFragment;
+
 /**
  * The main activity of the app. This activity has 3 tabs, showing the following:
  *
@@ -41,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        WeatherBroadcastReceiver weatherBroadcastReceiver = new WeatherBroadcastReceiver();
+        weatherBroadcastReceiver.setAlarm(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             // return the appropriate fragment
             switch (position) {
                 case 0:
-                    return new Fragment();
+                    return new CurrentWeatherFragment();
                 case 1:
                     return new Fragment();
                 case 2:
@@ -89,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return getString(R.string.current);
+                    return getString(R.string.now);
                 case 1:
                     return getString(R.string.hourly);
                 case 2:

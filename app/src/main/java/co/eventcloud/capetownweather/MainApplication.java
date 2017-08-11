@@ -7,6 +7,8 @@ import com.crashlytics.android.Crashlytics;
 import com.facebook.stetho.Stetho;
 import com.uphyca.stetho_realm.RealmInspectorModulesProvider;
 
+import net.danlew.android.joda.JodaTimeAndroid;
+
 import co.eventcloud.capetownweather.realm.RealmMigrationHandler;
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
@@ -48,5 +50,8 @@ public class MainApplication extends Application {
 
         // Initialise Fabric Crashlytics
         Fabric.with(this, new Crashlytics());
+
+        // Initialise Joda Time
+        JodaTimeAndroid.init(this);
     }
 }

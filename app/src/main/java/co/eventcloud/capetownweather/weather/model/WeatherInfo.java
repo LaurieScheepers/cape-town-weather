@@ -12,13 +12,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class WeatherInfo {
 
-    @SerializedName("currentWeatherInfo")
+    @SerializedName("currently")
     @Expose
     private CurrentWeatherInfo currentWeatherInfo;
-    @SerializedName("dayWeatherInfo")
+
+    @SerializedName("hourly")
     @Expose
     private DayWeatherInfo dayWeatherInfo;
-    @SerializedName("weekWeatherInfo")
+
+    @SerializedName("daily")
     @Expose
     private WeekWeatherInfo weekWeatherInfo;
 

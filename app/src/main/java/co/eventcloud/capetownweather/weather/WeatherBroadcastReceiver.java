@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
+import timber.log.Timber;
+
 /**
  * A broadcast receiver that receives an intent each time the "alarm" (every 30 minutes) goes off.
  * This class starts the background weather service that retrieves the weather from the API.
@@ -30,6 +32,7 @@ public class WeatherBroadcastReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Timber.d("Alarm has gone off, start the service");
         Intent weatherService = new Intent(context, WeatherService.class);
         startWakefulService(context, weatherService);
     }
@@ -39,10 +42,13 @@ public class WeatherBroadcastReceiver extends WakefulBroadcastReceiver {
         Intent intent = new Intent(context, WeatherBroadcastReceiver.class);
         alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
+        Timber.d("Setting the alarm");
+
         // Configure the alarm manager to send the alarm intent every 15 minutes. Note, using inexact repeats are better for the device's battery.
         // Also, this deviates a bit from the specs in that the intent is sent every 15 mins instead of 20.
         // This is because for inexact repeats we must use one of the defined constants (see https://developer.android.com/training/scheduling/alarms.html for best practises)
-        alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, alarmIntent);
+        //alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, System.currentTimeMillis(), AlarmManager.INTERVAL_FIFTEEN_MINUTES, alarmIntent);
+        alarmManager.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, 1000 * 10, alarmIntent);
 
         // Enable the alarm
         ComponentName receiver = new ComponentName(context, WeatherBroadcastReceiver.class);
