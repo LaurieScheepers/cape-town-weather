@@ -39,6 +39,7 @@ import co.eventcloud.capetownweather.realm.dao.WeatherDao;
 import co.eventcloud.capetownweather.realm.model.RealmCurrentWeatherInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
 import co.eventcloud.capetownweather.utils.UiUtil;
+import co.eventcloud.capetownweather.utils.callback.FadeOutAnimationCompletedCallback;
 import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdateErrorEvent;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
@@ -143,153 +144,183 @@ public class CurrentWeatherFragment extends Fragment {
     }
 
     private void showLoadingView() {
-        // Start the sun loading indicator
-        sunLoadingIndicator.setVisibility(View.VISIBLE);
-        UiUtil.startRotateForever(sunLoadingIndicator);
+        UiUtil.fadeViewOut(skyconPlaceholder, 500, new FadeOutAnimationCompletedCallback() {
+            @Override
+            public void onCompleted() {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // Start the sun loading indicator
+                        sunLoadingIndicator.setVisibility(View.VISIBLE);
+                        UiUtil.startRotateForever(sunLoadingIndicator);
 
-        // Start a progress indicator here as there is no data (this will only happen if the DB is empty, i.e. first launch of the app).
-        // In this case, the weather is still busy being retrieved. Set the layout to show refreshing while this is happening.
-        swipeToRefreshLayout.setRefreshing(true);
+                        // Start a progress indicator here as there is no data (this will only happen if the DB is empty, i.e. first launch of the app).
+                        // In this case, the weather is still busy being retrieved. Set the layout to show refreshing while this is happening.
+                        swipeToRefreshLayout.setRefreshing(true);
 
-        // Start the shimmer loading indicator
-        shimmerFrameLayout.startShimmerAnimation();
+                        // Start the shimmer loading indicator
+                        shimmerFrameLayout.startShimmerAnimation();
+                    }
+                });
+
+            }
+        });
     }
 
     private void hideLoadingView() {
-        // NOTE: throughout this method I am checking if the views are null
-        // This can happen because of threading issues
+        // NOTE: throughout this method I am checking if the views are null.
+        // This can happen because of communication happening across different threads (e.g. the service calling the event to update the UI)
+        // These checks are just for sanity sake, making everything run on the UI thread should solve any issues
 
-        // Disable refreshing of swipe to refresh layout
-        if (swipeToRefreshLayout != null) {
-            swipeToRefreshLayout.setRefreshing(false);
-        }
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                // Disable refreshing of swipe to refresh layout
+                if (swipeToRefreshLayout != null) {
+                    swipeToRefreshLayout.setRefreshing(false);
+                }
 
-        if (sunLoadingIndicator != null) {
-            // Stop the rotating sun
-            UiUtil.stopRotateForever(sunLoadingIndicator);
-            sunLoadingIndicator.setVisibility(View.GONE);
-        }
+                if (sunLoadingIndicator != null) {
+                    // Stop the rotating sun
+                    UiUtil.stopRotateForever(sunLoadingIndicator);
+                    sunLoadingIndicator.setVisibility(View.GONE);
+                }
 
-        if (shimmerFrameLayout != null) {
-            // Stop the amazing shimmer animation
-            shimmerFrameLayout.stopShimmerAnimation();
-        }
+                if (shimmerFrameLayout != null) {
+                    // Stop the amazing shimmer animation
+                    shimmerFrameLayout.stopShimmerAnimation();
+                }
+
+                UiUtil.fadeViewIn(skyconPlaceholder);
+            }
+        });
     }
 
-    private void showErrorView(String errorMessage) {
-        // NOTE: throughout this method I am checking if the views are null
+    private void showErrorView(final String errorMessage) {
+        // NOTE: throughout this method I am checking if the views are null.
         // This can happen because of communication happening across different threads (e.g. the service calling the event to update the UI)
+        // These checks are just for sanity sake, making everything run on the UI thread should solve any issues
 
-        Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
 
-        hideLoadingView();
+                hideLoadingView();
 
-        // If there hasn't been any weather info saved to the DB, show the error card view
-        if (currentWeatherInfo == null || currentWeatherInfo.getTemperature() == null) {
-            if (cardViewWeather != null) {
-                cardViewWeather.setVisibility(View.GONE);
-            }
+                // If there hasn't been any weather info saved to the DB, show the error card view
+                if (currentWeatherInfo == null || currentWeatherInfo.getTemperature() == null) {
+                    if (cardViewWeather != null) {
+                        cardViewWeather.setVisibility(View.GONE);
+                    }
 
-            if (errorLayout != null) {
-                errorLayout.setVisibility(View.VISIBLE);
-            }
-        }
+                    if (errorLayout != null) {
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
+                }
 
-        if (buttonTryAgain != null) {
-            buttonTryAgain.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    showLoadingView();
-
-                    WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                if (buttonTryAgain != null) {
+                    buttonTryAgain.setOnClickListener(new View.OnClickListener() {
                         @Override
-                        public void onWeatherFinishedUpdating(final int temp) {
-                            hideLoadingView();
-                        }
+                        public void onClick(View v) {
 
-                        @Override
-                        public void onWeatherUpdateError(String errorMessage) {
-                            showErrorView(errorMessage);
+                            showLoadingView();
+
+                            WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                                @Override
+                                public void onWeatherFinishedUpdating(final int temp) {
+                                    hideLoadingView();
+                                }
+
+                                @Override
+                                public void onWeatherUpdateError(String errorMessage) {
+                                    showErrorView(errorMessage);
+                                }
+                            });
                         }
                     });
                 }
-            });
-        }
+            }
+        });
     }
 
     private void setWeatherInfo() {
         if (currentWeatherInfo != null) {
 
-            // If for some reason the layout is still refreshing but we already have data, stop it
-            if (swipeToRefreshLayout.isRefreshing()) {
-                swipeToRefreshLayout.setRefreshing(false);
-            }
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // If for some reason the layout is still refreshing but we already have data, stop it
+                    if (swipeToRefreshLayout != null && swipeToRefreshLayout.isRefreshing()) {
+                        swipeToRefreshLayout.setRefreshing(false);
+                    }
 
-            if (realm != null && realm.isClosed()) {
-                realm = Realm.getDefaultInstance();
-            }
+                    if (realm != null && realm.isClosed()) {
+                        realm = Realm.getDefaultInstance();
+                    }
 
-            hideLoadingView();
+                    hideLoadingView();
 
-            // Time is returned by API as seconds since epoch, convert it to millis
-            long timeInMillis = currentWeatherInfo.getTime() * 1000L;
+                    // Time is returned by API as seconds since epoch, convert it to millis
+                    long timeInMillis = currentWeatherInfo.getTime() * 1000L;
 
-            // Create a date object from the timestamp
-            Date date = new Date(timeInMillis);
+                    // Create a date object from the timestamp
+                    Date date = new Date(timeInMillis);
 
-            // Format the date using English locale and SAST timezone
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Africa/Johannesburg"));
+                    // Format the date using English locale and SAST timezone
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+                    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Africa/Johannesburg"));
 
-            // Time
-            time.setText(String.format(getString(R.string.time), simpleDateFormat.format(date)));
+                    // Time
+                    time.setText(String.format(getString(R.string.time), simpleDateFormat.format(date)));
 
-            // Summmary
-            summary.setText(currentWeatherInfo.getSummary());
-            summary.setSelected(true);
+                    // Summmary
+                    summary.setText(currentWeatherInfo.getSummary());
+                    summary.setSelected(true);
 
-            // Real Temp
-            String temperature = String.format(getString(R.string.temperature), currentWeatherInfo.getTemperature().intValue());
-            realTemperature.setText(temperature);
+                    // Real Temp
+                    String temperature = String.format(getString(R.string.temperature), currentWeatherInfo.getTemperature().intValue());
+                    realTemperature.setText(temperature);
 
-            // Apparent Temp
-            String apparentTemperatureString = String.format(getString(R.string.apparentTemperature), currentWeatherInfo.getApparentTemperature().intValue());
-            apparentTemperature.setText(apparentTemperatureString);
+                    // Apparent Temp
+                    String apparentTemperatureString = String.format(getString(R.string.apparentTemperature), currentWeatherInfo.getApparentTemperature().intValue());
+                    apparentTemperature.setText(apparentTemperatureString);
 
-            // Humidity
-            final String humidityString = String.format(getString(R.string.humidity), (int) (currentWeatherInfo.getHumidity() * 100));
-            humidity.setText(humidityString);
+                    // Humidity
+                    final String humidityString = String.format(getString(R.string.humidity), (int) (currentWeatherInfo.getHumidity() * 100));
+                    humidity.setText(humidityString);
 
-            // Precipitation
-            String precipitationString = String.format(getString(R.string.precipitation), (int) (currentWeatherInfo.getPrecipitationProbability() * 100));
-            precipitation.setText(precipitationString);
+                    // Precipitation
+                    String precipitationString = String.format(getString(R.string.precipitation), (int) (currentWeatherInfo.getPrecipitationProbability() * 100));
+                    precipitation.setText(precipitationString);
 
-            // Wind speed
-            String windSpeedString = String.format(getString(R.string.windSpeed), (int) (currentWeatherInfo.getWindSpeed() * 3.6));
-            windSpeed.setText(windSpeedString);
+                    // Wind speed
+                    String windSpeedString = String.format(getString(R.string.windSpeed), (int) (currentWeatherInfo.getWindSpeed() * 3.6));
+                    windSpeed.setText(windSpeedString);
 
-            // Skycon!
-            String iconString = currentWeatherInfo.getIcon();
+                    // Skycon!
+                    String iconString = currentWeatherInfo.getIcon();
 
-            final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
+                    final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
 
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-            skyconView.setLayoutParams(params);
+                    skyconView.setLayoutParams(params);
 
-            // First remove any views that might be in the placeholder container
-            if (skyconPlaceholder.getChildCount() > 0) {
-                skyconPlaceholder.removeAllViews();
-            }
+                    // First remove any views that might be in the placeholder container
+                    if (skyconPlaceholder.getChildCount() > 0) {
+                        skyconPlaceholder.removeAllViews();
+                    }
 
-            // Now add the correct skycon view
-            skyconPlaceholder.addView(skyconView);
+                    // Now add the correct skycon view
+                    skyconPlaceholder.addView(skyconView);
 
-            if (!realm.isClosed()) {
-                realm.close();
-            }
+                    if (!realm.isClosed()) {
+                        realm.close();
+                    }
+                }
+            });
         } else {
             showLoadingView();
         }
