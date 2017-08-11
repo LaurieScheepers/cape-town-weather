@@ -33,7 +33,9 @@ public class UiUtil {
     }
 
     public static void stopRotateForever(View view) {
-        view.setAnimation(null);
-        view.clearAnimation();
+        if (view != null) {
+            view.setAnimation(null);
+            view.clearAnimation();
+        }
     }
 }

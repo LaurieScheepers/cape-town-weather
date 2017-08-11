@@ -7,9 +7,11 @@ import android.support.annotation.Nullable;
 import org.greenrobot.eventbus.EventBus;
 
 import co.eventcloud.capetownweather.BuildConfig;
+import co.eventcloud.capetownweather.R;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
 import co.eventcloud.capetownweather.weather.WeatherService;
 import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
+import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdateErrorEvent;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import co.eventcloud.capetownweather.weather.model.CurrentWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.WeatherInfo;
@@ -113,13 +115,33 @@ public class WeatherRetriever {
                     }
                 } else {
                     int statusCode = response.code();
+
                     Timber.e("OH NO, something went wrong with retrieving the weather. Status Code = " + statusCode);
+
+                    String errorMessage = "";
+
+                    // Check for errors
+                    if (statusCode == 503) { // SERVICE_UNAVAILABLE - might be because of unreliable network
+                        errorMessage = context.getString(R.string.error_service_unavailable);
+                    } else {
+                        errorMessage = context.getString(R.string.error_generic);
+                    }
+
+                    if (listener != null) {
+                        listener.onWeatherUpdateError(errorMessage);
+                    }
+
+                    EventBus.getDefault().postSticky(new WeatherInfoUpdateErrorEvent());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<WeatherInfo> call, @NonNull Throwable t) {
                 Timber.e(t, "OH NO, something went wrong with retrieving the weather");
+
+                if (listener != null) {
+                    listener.onWeatherUpdateError(context.getString(R.string.error_generic));
+                }
             }
         });
     }
@@ -128,6 +150,6 @@ public class WeatherRetriever {
      * Helper method to do the GET weather API call. This method also handles the API response and the updating of the database.
      */
     public static void getWeather(final Context context, final WeatherUpdateListener listener) {
-        getWeather(context, listener, 0, 0f);
+        getWeather(context, listener, BuildConfig.DEBUG ? 3 : 0, BuildConfig.DEBUG ? 1f : 0f);
     }
 }

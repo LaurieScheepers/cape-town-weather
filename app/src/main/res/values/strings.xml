@@ -11,6 +11,11 @@
     <string name="windSpeed">%1$d km/h</string>
     <string name="time">%1$s SAST</string>
 
+    <!-- Errors -->
+    <string name="error_service_unavailable">The Weather service is currently not available. Please try again later.</string>
+    <string name="error_generic">Oops, something went wrong with getting the weather update. Please try again later.</string>
+    <string name="try_again">Try again</string>
+
     <string name="coldWarningNotificationHeading">Brrr</string>
     <string name="coldWarningNotificationText">It\'s getting colder... Current temperature: %1$d ℃</string>
 

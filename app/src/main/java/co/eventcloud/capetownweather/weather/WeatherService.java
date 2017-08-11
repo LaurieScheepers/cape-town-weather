@@ -46,6 +46,11 @@ public class WeatherService extends IntentService {
                     // Pass the intent back to release the wake lock
                     WeatherBroadcastReceiver.completeWakefulIntent(intent);
                 }
+
+                @Override
+                public void onWeatherUpdateError(String errorMessage) {
+                    Timber.e("Failed to get weather from API: " + errorMessage);
+                }
             });
         }
     }

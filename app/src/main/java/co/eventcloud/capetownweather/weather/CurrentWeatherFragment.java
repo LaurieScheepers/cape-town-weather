@@ -2,15 +2,19 @@ package co.eventcloud.capetownweather.weather;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -36,6 +40,7 @@ import co.eventcloud.capetownweather.realm.model.RealmCurrentWeatherInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
 import co.eventcloud.capetownweather.utils.UiUtil;
 import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
+import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdateErrorEvent;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import io.realm.Realm;
 
@@ -83,6 +88,12 @@ public class CurrentWeatherFragment extends Fragment {
     SwipeRefreshLayout swipeToRefreshLayout;
     @BindView(R.id.sunLoadingIndicator)
     ImageView sunLoadingIndicator;
+    @BindView(R.id.errorLayout)
+    RelativeLayout errorLayout;
+    @BindView(R.id.cardViewWeather)
+    CardView cardViewWeather;
+    @BindView(R.id.buttonTryAgain)
+    Button buttonTryAgain;
 
     private Realm realm;
 
@@ -110,10 +121,17 @@ public class CurrentWeatherFragment extends Fragment {
         swipeToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                showLoadingView();
+
                 WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
                     public void onWeatherFinishedUpdating(final int temp) {
-                        swipeToRefreshLayout.setRefreshing(false);
+                        hideLoadingView();
+                    }
+
+                    @Override
+                    public void onWeatherUpdateError(String errorMessage) {
+                        showErrorView(errorMessage);
                     }
                 });
             }
@@ -122,6 +140,82 @@ public class CurrentWeatherFragment extends Fragment {
         setWeatherInfo();
 
         return view;
+    }
+
+    private void showLoadingView() {
+        // Start the sun loading indicator
+        sunLoadingIndicator.setVisibility(View.VISIBLE);
+        UiUtil.startRotateForever(sunLoadingIndicator);
+
+        // Start a progress indicator here as there is no data (this will only happen if the DB is empty, i.e. first launch of the app).
+        // In this case, the weather is still busy being retrieved. Set the layout to show refreshing while this is happening.
+        swipeToRefreshLayout.setRefreshing(true);
+
+        // Start the shimmer loading indicator
+        shimmerFrameLayout.startShimmerAnimation();
+    }
+
+    private void hideLoadingView() {
+        // NOTE: throughout this method I am checking if the views are null
+        // This can happen because of threading issues
+
+        // Disable refreshing of swipe to refresh layout
+        if (swipeToRefreshLayout != null) {
+            swipeToRefreshLayout.setRefreshing(false);
+        }
+
+        if (sunLoadingIndicator != null) {
+            // Stop the rotating sun
+            UiUtil.stopRotateForever(sunLoadingIndicator);
+            sunLoadingIndicator.setVisibility(View.GONE);
+        }
+
+        if (shimmerFrameLayout != null) {
+            // Stop the amazing shimmer animation
+            shimmerFrameLayout.stopShimmerAnimation();
+        }
+    }
+
+    private void showErrorView(String errorMessage) {
+        // NOTE: throughout this method I am checking if the views are null
+        // This can happen because of communication happening across different threads (e.g. the service calling the event to update the UI)
+
+        Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+
+        hideLoadingView();
+
+        // If there hasn't been any weather info saved to the DB, show the error card view
+        if (currentWeatherInfo == null || currentWeatherInfo.getTemperature() == null) {
+            if (cardViewWeather != null) {
+                cardViewWeather.setVisibility(View.GONE);
+            }
+
+            if (errorLayout != null) {
+                errorLayout.setVisibility(View.VISIBLE);
+            }
+        }
+
+        if (buttonTryAgain != null) {
+            buttonTryAgain.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    showLoadingView();
+
+                    WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                        @Override
+                        public void onWeatherFinishedUpdating(final int temp) {
+                            hideLoadingView();
+                        }
+
+                        @Override
+                        public void onWeatherUpdateError(String errorMessage) {
+                            showErrorView(errorMessage);
+                        }
+                    });
+                }
+            });
+        }
     }
 
     private void setWeatherInfo() {
@@ -136,12 +230,7 @@ public class CurrentWeatherFragment extends Fragment {
                 realm = Realm.getDefaultInstance();
             }
 
-            // Stop the rotating sun
-            UiUtil.stopRotateForever(sunLoadingIndicator);
-            sunLoadingIndicator.setVisibility(View.GONE);
-
-            // Also stop shimmering once the loading is done
-            shimmerFrameLayout.stopShimmerAnimation();
+            hideLoadingView();
 
             // Time is returned by API as seconds since epoch, convert it to millis
             long timeInMillis = currentWeatherInfo.getTime() * 1000L;
@@ -202,16 +291,7 @@ public class CurrentWeatherFragment extends Fragment {
                 realm.close();
             }
         } else {
-            // Start the sun loading indicator
-            sunLoadingIndicator.setVisibility(View.VISIBLE);
-            UiUtil.startRotateForever(sunLoadingIndicator);
-
-            // Start a progress indicator here as there is no data (this will only happen if the DB is empty, i.e. first launch of the app).
-            // In this case, the weather is still busy being retrieved. Set the layout to show refreshing while this is happening.
-            swipeToRefreshLayout.setRefreshing(true);
-
-            // Start the shimmer loading indicator
-            shimmerFrameLayout.startShimmerAnimation();
+            showLoadingView();
         }
     }
 
@@ -233,6 +313,14 @@ public class CurrentWeatherFragment extends Fragment {
         } else {
             setWeatherInfo();
         }
+
+        // Now remove the sticky event, we don't want it to be handled again after navigating to this fragment
+        EventBus.getDefault().removeStickyEvent(event);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onEvent(WeatherInfoUpdateErrorEvent event) {
+        showErrorView(getString(R.string.error_generic));
 
         // Now remove the sticky event, we don't want it to be handled again after navigating to this fragment
         EventBus.getDefault().removeStickyEvent(event);

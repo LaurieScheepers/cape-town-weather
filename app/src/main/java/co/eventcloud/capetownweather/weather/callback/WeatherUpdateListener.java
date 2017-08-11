@@ -13,4 +13,10 @@ public interface WeatherUpdateListener {
      * Callback invoked when the weather has finished updating
      */
     void onWeatherFinishedUpdating(final int temp);
+
+    /**
+     * Callback invoked when there was an error in getting the weather from the API
+     * @param errorMessage the error message to be displayed
+     */
+    void onWeatherUpdateError(String errorMessage);
 }

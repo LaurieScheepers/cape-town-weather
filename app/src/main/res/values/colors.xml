@@ -8,4 +8,7 @@
 
     <color name="grey_600">#757575</color>
 
+    <color name="blueButtonColour">#ff25a1e3</color>
+    <color name="blueButtonRippleColour">#64b5f6</color>
+
 </resources>

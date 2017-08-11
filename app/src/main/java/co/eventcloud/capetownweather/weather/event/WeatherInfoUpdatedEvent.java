@@ -10,6 +10,6 @@ package co.eventcloud.capetownweather.weather.event;
 public class WeatherInfoUpdatedEvent {
 
     public WeatherInfoUpdatedEvent() {
-        // Nothing needed in constructor
+        // Nothing needed in constructor, the event is only meant to notify the UI - no extra information required
     }
 }
