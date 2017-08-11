@@ -49,6 +49,8 @@ public class WeatherRetriever {
                                   @Nullable Float chaos,
                                   @NonNull Callback<WeatherInfo> callback) {
 
+        Timber.d("Getting weather from API");
+
         // Create a logging interceptor (to show detailed logs about the request and response).
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
