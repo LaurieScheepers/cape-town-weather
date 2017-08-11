@@ -9,5 +9,8 @@ package co.eventcloud.capetownweather.weather.callback;
 
 public interface WeatherUpdateListener {
 
-    void onWeatherFinishedUpdating();
+    /**
+     * Callback invoked when the weather has finished updating
+     */
+    void onWeatherFinishedUpdating(final int temp);
 }

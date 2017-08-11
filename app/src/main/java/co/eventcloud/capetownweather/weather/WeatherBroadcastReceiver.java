@@ -47,7 +47,7 @@ public class WeatherBroadcastReceiver extends WakefulBroadcastReceiver {
         // Configure the alarm manager to send the alarm intent every 15 minutes. Note, using inexact repeats are better for the device's battery.
         // Also, this deviates a bit from the specs in that the intent is sent every 15 mins instead of 20.
         // This is because for inexact repeats we must use one of the defined constants (see https://developer.android.com/training/scheduling/alarms.html for best practises)
-        // In any case, since API 19, all repeats are inexact.
+        // In any case, since API 19, all repeats are inexact (also minimum interval time is one minute). Feel free to ask me questions about this if you want
         alarmManager.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, 0, AlarmManager.INTERVAL_FIFTEEN_MINUTES, alarmIntent);
 
         // Enable the alarm
@@ -57,11 +57,5 @@ public class WeatherBroadcastReceiver extends WakefulBroadcastReceiver {
         pm.setComponentEnabledSetting(receiver,
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
-    }
-
-    public void cancelAlarm() {
-        if (alarmManager != null) {
-            alarmManager.cancel(alarmIntent);
-        }
     }
 }

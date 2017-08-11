@@ -1,5 +1,6 @@
 package co.eventcloud.capetownweather.network;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -7,8 +8,10 @@ import org.greenrobot.eventbus.EventBus;
 
 import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
+import co.eventcloud.capetownweather.weather.WeatherService;
 import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
+import co.eventcloud.capetownweather.weather.model.CurrentWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.WeatherInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -18,6 +21,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
+
+import static co.eventcloud.capetownweather.weather.WeatherService.HIGH_TEMP_BOUNDARY;
 
 /**
  * Contains helper methods related to retrieving the weather from the API
@@ -68,11 +73,15 @@ public class WeatherRetriever {
     }
 
     /**
-     * Helper method to do the GET weather API call. This method also handles the API response and the updating of the database.
+     * Helper method to do the GET weather API call. This method handles the API response and the updating of the database.
+     * @param context the Context to use
+     * @param listener a WeatherUpdateListener that will fire a callback once the update is complete
+     * @param delay the delay in seconds before the response is sent by the server
+     * @param chaos the chaos level (probability of server sending 503)
      */
-    public static void getWeather(final WeatherUpdateListener listener) {
+    public static void getWeather(final Context context, final WeatherUpdateListener listener, int delay, float chaos) {
         // Get Weather from the API
-        WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", 0, 0f, new Callback<WeatherInfo>() {
+        WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", delay, chaos, new Callback<WeatherInfo>() {
             @Override
             public void onResponse(@NonNull Call<WeatherInfo> call, @NonNull Response<WeatherInfo> response) {
                 if (response.isSuccessful()) {
@@ -81,15 +90,25 @@ public class WeatherRetriever {
                     WeatherInfo weatherInfo = response.body();
 
                     if (weatherInfo != null) {
+                        CurrentWeatherInfo currentWeatherInfo = weatherInfo.getCurrentWeatherInfo();
+                        int currentTemp = currentWeatherInfo.getTemperature().intValue();
+
                         // Save the weather information to the DB
-                        WeatherDao.saveCurrentWeather(weatherInfo.getCurrentWeatherInfo());
+                        WeatherDao.saveCurrentWeather(currentWeatherInfo);
                         WeatherDao.saveWeekWeatherInfo(weatherInfo.getWeekWeatherInfo());
                         WeatherDao.saveDayWeatherInfo(weatherInfo.getDayWeatherInfo());
 
                         EventBus.getDefault().postSticky(new WeatherInfoUpdatedEvent());
 
                         if (listener != null) {
-                            listener.onWeatherFinishedUpdating();
+                            listener.onWeatherFinishedUpdating(currentTemp);
+                        }
+
+                        // Send notification if temperature has dropped below 15 deg C or risen above 25 deg C
+                        if (currentTemp < WeatherService.LOW_TEMP_BOUNDARY) {
+                            WeatherService.sendColdWarningNotification(context, currentTemp);
+                        } else if (currentTemp > HIGH_TEMP_BOUNDARY) {
+                            WeatherService.sendHotWarningNotification(context, currentTemp);
                         }
                     }
                 } else {
@@ -103,5 +122,12 @@ public class WeatherRetriever {
                 Timber.e(t, "OH NO, something went wrong with retrieving the weather");
             }
         });
+    }
+
+    /**
+     * Helper method to do the GET weather API call. This method also handles the API response and the updating of the database.
+     */
+    public static void getWeather(final Context context, final WeatherUpdateListener listener) {
+        getWeather(context, listener, 0, 0f);
     }
 }

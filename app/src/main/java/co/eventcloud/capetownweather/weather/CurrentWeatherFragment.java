@@ -28,6 +28,7 @@ import java.util.TimeZone;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.R;
 import co.eventcloud.capetownweather.network.WeatherRetriever;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
@@ -109,9 +110,9 @@ public class CurrentWeatherFragment extends Fragment {
         swipeToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WeatherRetriever.getWeather(new WeatherUpdateListener() {
+                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
-                    public void onWeatherFinishedUpdating() {
+                    public void onWeatherFinishedUpdating(final int temp) {
                         swipeToRefreshLayout.setRefreshing(false);
                     }
                 });
@@ -221,7 +222,17 @@ public class CurrentWeatherFragment extends Fragment {
         // Get the updated weather info in the DB
         currentWeatherInfo = WeatherDao.getCurrentWeatherInfo(realm);
 
-        setWeatherInfo();
+        // In debug mode only set the weather 3 seconds after the data has been received, because I like looking at the loading animations :)
+        if (BuildConfig.DEBUG) {
+            swipeToRefreshLayout.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setWeatherInfo();
+                }
+            }, 3000);
+        } else {
+            setWeatherInfo();
+        }
 
         // Now remove the sticky event, we don't want it to be handled again after navigating to this fragment
         EventBus.getDefault().removeStickyEvent(event);

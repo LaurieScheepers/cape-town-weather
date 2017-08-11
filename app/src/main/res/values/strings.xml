@@ -10,4 +10,10 @@
     <string name="precipitation">%1$d%%</string>
     <string name="windSpeed">%1$d km/h</string>
     <string name="time">%1$s SAST</string>
+
+    <string name="coldWarningNotificationHeading">Brrr</string>
+    <string name="coldWarningNotificationText">It\'s getting colder... Current temperature: %1$d ℃</string>
+
+    <string name="hotWarningNotificationHeading">Eish!</string>
+    <string name="hotWarningNotificationText">It\'s getting warmer... Current temperature: %1$d ℃</string>
 </resources>

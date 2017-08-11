@@ -65,11 +65,10 @@ public class DailyWeatherFragment extends Fragment {
 
         // If no data, request it from the server
         if (weekWeatherInfo == null) {
-            swipeToRefresh.setRefreshing(true);
 
-            WeatherRetriever.getWeather(new WeatherUpdateListener() {
+            WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                 @Override
-                public void onWeatherFinishedUpdating() {
+                public void onWeatherFinishedUpdating(final int temp) {
                     // Get the updated weather info in the DB
                     weekWeatherInfo = WeatherDao.getWeekWeatherInfo(realm);
 
@@ -97,9 +96,9 @@ public class DailyWeatherFragment extends Fragment {
         swipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WeatherRetriever.getWeather(new WeatherUpdateListener() {
+                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
-                    public void onWeatherFinishedUpdating() {
+                    public void onWeatherFinishedUpdating(final int temp) {
                         swipeToRefresh.setRefreshing(false);
                     }
                 });
@@ -116,6 +115,11 @@ public class DailyWeatherFragment extends Fragment {
     }
 
     private void setWeatherInfo() {
+        if (weekWeatherInfo == null) {
+            WeatherRetriever.getWeather(getContext(), null);
+            return;
+        }
+
         if (adapter == null) {
             adapter = new DailyWeatherAdapter(weekWeatherInfo.getData());
         }
