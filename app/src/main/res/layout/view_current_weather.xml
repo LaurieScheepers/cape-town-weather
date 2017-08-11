@@ -18,6 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/sunLoadingIndicator"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:srcCompat="@drawable/ic_sun"
+                android:visibility="visible"
+                android:layout_centerInParent="true"/>
 
             <TextView
                 android:id="@+id/heading"

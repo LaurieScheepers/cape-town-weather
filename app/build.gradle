@@ -15,7 +15,7 @@ android {
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "co.eventcloud.capetownweather"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0.0"
@@ -85,4 +85,7 @@ dependencies {
 
     // Eventbus, for passing events between components
     compile 'org.greenrobot:eventbus:3.0.0'
+
+    // Shimmer effect, for when things are loading
+    compile 'com.facebook.shimmer:shimmer:0.1.0@aar'
 }

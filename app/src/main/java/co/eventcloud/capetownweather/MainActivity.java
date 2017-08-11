@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @BindView(R.id.viewPager)
     ViewPager viewPager;
+
     /**
      * The {@link PagerAdapter} that will provide
      * fragments for each of the sections. We use a

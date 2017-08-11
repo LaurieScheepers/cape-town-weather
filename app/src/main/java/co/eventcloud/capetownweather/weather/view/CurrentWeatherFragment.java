@@ -9,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.thbs.skycons.library.SkyconView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -31,6 +33,7 @@ import co.eventcloud.capetownweather.network.WeatherRetriever;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
 import co.eventcloud.capetownweather.realm.model.RealmCurrentWeatherInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
+import co.eventcloud.capetownweather.utils.UiUtil;
 import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import io.realm.Realm;
@@ -58,15 +61,27 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
     TextView humidity;
     @BindView(R.id.wind_speed)
     TextView windSpeed;
-    Unbinder unbinder;
 
-    RealmCurrentWeatherInfo currentWeatherInfo;
     @BindView(R.id.time)
     TextView time;
     @BindView(R.id.humidity_wind_container)
     LinearLayout humidityWindContainer;
-    @BindView(R.id.swipeToRefreshLayout)
+    @BindView(R.id.shimmerFrameLayout)
+    ShimmerFrameLayout shimmerFrameLayout;
+
+    // Keep reference to the current weather DB object
+    RealmCurrentWeatherInfo currentWeatherInfo;
+
+    // Butterknife unbinder
+    Unbinder unbinder;
+
+    /**
+     * The swipe to refresh layout, that will do the GET weather API call once swiped down
+     */
+    @BindView(R.id.swipeToRefresh)
     SwipeRefreshLayout swipeToRefreshLayout;
+    @BindView(R.id.sunLoadingIndicator)
+    ImageView sunLoadingIndicator;
 
     private Realm realm;
 
@@ -86,8 +101,11 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
 
         unbinder = ButterKnife.bind(this, view);
 
+        realm = Realm.getDefaultInstance();
+
         swipeToRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorAccent));
 
+        // Set the refresh listener to do the GET weather call if swiped down
         swipeToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -100,8 +118,6 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
             }
         });
 
-        realm = Realm.getDefaultInstance();
-
         setInfo();
 
         return view;
@@ -109,14 +125,26 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
 
     private void setInfo() {
         if (currentWeatherInfo != null) {
+
+            // If for some reason the layout is still refreshing but we already have data, stop it
             if (swipeToRefreshLayout.isRefreshing()) {
                 swipeToRefreshLayout.setRefreshing(false);
             }
 
+            // Stop the rotating sun
+            UiUtil.stopRotateForever(sunLoadingIndicator);
+            sunLoadingIndicator.setVisibility(View.GONE);
+
+            // Also stop shimmering once the loading is done
+            shimmerFrameLayout.stopShimmerAnimation();
+
+            // Time is returned by API as seconds since epoch, convert it to millis
             long timeInMillis = currentWeatherInfo.getTime() * 1000L;
 
+            // Create a date object from the timestamp
             Date date = new Date(timeInMillis);
 
+            // Format the date using English locale and SAST timezone
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
             simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Africa/Johannesburg"));
 
@@ -148,15 +176,23 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
 
             skyconView.setLayoutParams(params);
 
+            // Add the correct skycon in the place holder
             skyconPlaceholder.addView(skyconView);
 
             if (!realm.isClosed()) {
                 realm.close();
             }
         } else {
+            // Start the sun loading indicator
+            sunLoadingIndicator.setVisibility(View.VISIBLE);
+            UiUtil.startRotateForever(sunLoadingIndicator);
+
             // Start a progress indicator here as there is no data (this will only happen if the DB is empty, i.e. first launch of the app).
             // In this case, the weather is still busy being retrieved. Set the layout to show refreshing while this is happening.
             swipeToRefreshLayout.setRefreshing(true);
+
+            // Start the shimmer loading indicator
+            shimmerFrameLayout.startShimmerAnimation();
         }
     }
 

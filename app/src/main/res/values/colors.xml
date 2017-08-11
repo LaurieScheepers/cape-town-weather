@@ -7,4 +7,7 @@
     <color name="black_overlay">#66000000</color>
 
     <color name="yellow_500">#FFEB3B</color>
+
+    <color name="grey_600">#757575</color>
+
 </resources>
