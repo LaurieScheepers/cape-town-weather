@@ -85,7 +85,4 @@ dependencies {
 
     // Eventbus, for passing events between components
     compile 'org.greenrobot:eventbus:3.0.0'
-
-    // Joda-time, for better date & time handling
-    compile 'net.danlew:android.joda:2.9.9'
 }

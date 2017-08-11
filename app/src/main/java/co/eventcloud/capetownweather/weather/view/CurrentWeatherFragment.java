@@ -3,6 +3,8 @@ package co.eventcloud.capetownweather.weather.view;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,19 +17,21 @@ import com.thbs.skycons.library.SkyconView;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import co.eventcloud.capetownweather.R;
+import co.eventcloud.capetownweather.network.WeatherRetriever;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
 import co.eventcloud.capetownweather.realm.model.RealmCurrentWeatherInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
+import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import io.realm.Realm;
 
@@ -61,6 +65,8 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
     TextView time;
     @BindView(R.id.humidity_wind_container)
     LinearLayout humidityWindContainer;
+    @BindView(R.id.swipeToRefreshLayout)
+    SwipeRefreshLayout swipeToRefreshLayout;
 
     private Realm realm;
 
@@ -80,6 +86,20 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
 
         unbinder = ButterKnife.bind(this, view);
 
+        swipeToRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+        swipeToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                WeatherRetriever.getWeather(new WeatherUpdateListener() {
+                    @Override
+                    public void onWeatherFinishedUpdating() {
+                        swipeToRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
+
         realm = Realm.getDefaultInstance();
 
         setInfo();
@@ -89,17 +109,18 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
 
     private void setInfo() {
         if (currentWeatherInfo != null) {
-            int timeInMillis = currentWeatherInfo.getTime() * 1000;
+            if (swipeToRefreshLayout.isRefreshing()) {
+                swipeToRefreshLayout.setRefreshing(false);
+            }
 
-            DateTimeZone dateTimeZone = DateTimeZone.forID("Africa/Johannesburg");
+            long timeInMillis = currentWeatherInfo.getTime() * 1000L;
 
-            Instant instant = new Instant(timeInMillis);
+            Date date = new Date(timeInMillis);
 
-            DateTime dateTime = instant.toDateTime(dateTimeZone);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Africa/Johannesburg"));
 
-            DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm");
-
-            time.setText(String.format(getString(R.string.time), dateTime.toString(fmt)));
+            time.setText(String.format(getString(R.string.time), simpleDateFormat.format(date)));
 
             summary.setText(currentWeatherInfo.getSummary());
 
@@ -109,13 +130,13 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
             String apparentTemperatureString = String.format(getString(R.string.apparentTemperature), currentWeatherInfo.getApparentTemperature().intValue());
             apparentTemperature.setText(apparentTemperatureString);
 
-            String humidityString = String.format(getString(R.string.humidity), (int)(currentWeatherInfo.getHumidity() * 100));
+            String humidityString = String.format(getString(R.string.humidity), (int) (currentWeatherInfo.getHumidity() * 100));
             humidity.setText(humidityString);
 
-            String precipitationString = String.format(getString(R.string.precipitation), (int)(currentWeatherInfo.getPrecipitationProbability() * 100));
+            String precipitationString = String.format(getString(R.string.precipitation), (int) (currentWeatherInfo.getPrecipitationProbability() * 100));
             precipitation.setText(precipitationString);
 
-            String windSpeedString = String.format(getString(R.string.windSpeed), (int)(currentWeatherInfo.getWindSpeed() * 3.6));
+            String windSpeedString = String.format(getString(R.string.windSpeed), (int) (currentWeatherInfo.getWindSpeed() * 3.6));
             windSpeed.setText(windSpeedString);
 
             String iconString = currentWeatherInfo.getIcon();
@@ -132,6 +153,10 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
             if (!realm.isClosed()) {
                 realm.close();
             }
+        } else {
+            // Start a progress indicator here as there is no data (this will only happen if the DB is empty, i.e. first launch of the app).
+            // In this case, the weather is still busy being retrieved. Set the layout to show refreshing while this is happening.
+            swipeToRefreshLayout.setRefreshing(true);
         }
     }
 

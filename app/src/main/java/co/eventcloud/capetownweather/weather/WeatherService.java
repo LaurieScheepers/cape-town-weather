@@ -2,19 +2,10 @@ package co.eventcloud.capetownweather.weather;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.greenrobot.eventbus.EventBus;
-
-import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.network.WeatherRetriever;
-import co.eventcloud.capetownweather.realm.dao.WeatherDao;
-import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
-import co.eventcloud.capetownweather.weather.model.WeatherInfo;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
 import timber.log.Timber;
 
 /**
@@ -32,41 +23,17 @@ public class WeatherService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(@Nullable final Intent intent) {
         Timber.d("Getting the weather from the API");
 
         if (intent != null) {
-            // Get Weather from the API
-            WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", 0, 0f, new Callback<WeatherInfo>() {
+            WeatherRetriever.getWeather(new WeatherUpdateListener() {
                 @Override
-                public void onResponse(@NonNull Call<WeatherInfo> call, @NonNull Response<WeatherInfo> response) {
-                    if (response.isSuccessful()) {
-                        Timber.d("YAY, WE GOT THE WEATHER, MAN!");
-
-                        WeatherInfo weatherInfo = response.body();
-
-                        if (weatherInfo != null) {
-                            // Save the weather information to the DB
-                            WeatherDao.saveCurrentWeather(weatherInfo.getCurrentWeatherInfo());
-                            WeatherDao.saveWeekWeatherInfo(weatherInfo.getWeekWeatherInfo());
-                            WeatherDao.saveDayWeatherInfo(weatherInfo.getDayWeatherInfo());
-
-                            EventBus.getDefault().postSticky(new WeatherInfoUpdatedEvent());
-                        }
-                    } else {
-                        int statusCode = response.code();
-                        Timber.e("OH NO, something went wrong with retrieving the weather. Status Code = " + statusCode);
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<WeatherInfo> call, @NonNull Throwable t) {
-                    Timber.e(t, "OH NO, something went wrong with retrieving the weather");
+                public void onWeatherFinishedUpdating() {
+                    // Pass the intent back to release the wake lock
+                    WeatherBroadcastReceiver.completeWakefulIntent(intent);
                 }
             });
-
-            // Pass the intent back to release the wake lock
-            WeatherBroadcastReceiver.completeWakefulIntent(intent);
         }
     }
 }

@@ -3,14 +3,21 @@ package co.eventcloud.capetownweather.network;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import org.greenrobot.eventbus.EventBus;
+
 import co.eventcloud.capetownweather.BuildConfig;
+import co.eventcloud.capetownweather.realm.dao.WeatherDao;
+import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
+import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import co.eventcloud.capetownweather.weather.model.WeatherInfo;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 /**
  * Contains helper methods related to retrieving the weather from the API
@@ -58,5 +65,43 @@ public class WeatherRetriever {
 
         // Make the call asynchronously and notify the callback of the response (which might be a success or error)
         call.enqueue(callback);
+    }
+
+    /**
+     * Helper method to do the GET weather API call. This method also handles the API response and the updating of the database.
+     */
+    public static void getWeather(final WeatherUpdateListener listener) {
+        // Get Weather from the API
+        WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", 0, 0f, new Callback<WeatherInfo>() {
+            @Override
+            public void onResponse(@NonNull Call<WeatherInfo> call, @NonNull Response<WeatherInfo> response) {
+                if (response.isSuccessful()) {
+                    Timber.d("YAY, WE GOT THE WEATHER, MAN!");
+
+                    WeatherInfo weatherInfo = response.body();
+
+                    if (weatherInfo != null) {
+                        // Save the weather information to the DB
+                        WeatherDao.saveCurrentWeather(weatherInfo.getCurrentWeatherInfo());
+                        WeatherDao.saveWeekWeatherInfo(weatherInfo.getWeekWeatherInfo());
+                        WeatherDao.saveDayWeatherInfo(weatherInfo.getDayWeatherInfo());
+
+                        EventBus.getDefault().postSticky(new WeatherInfoUpdatedEvent());
+
+                        if (listener != null) {
+                            listener.onWeatherFinishedUpdating();
+                        }
+                    }
+                } else {
+                    int statusCode = response.code();
+                    Timber.e("OH NO, something went wrong with retrieving the weather. Status Code = " + statusCode);
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<WeatherInfo> call, @NonNull Throwable t) {
+                Timber.e(t, "OH NO, something went wrong with retrieving the weather");
+            }
+        });
     }
 }
