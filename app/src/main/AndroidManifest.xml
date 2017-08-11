@@ -35,7 +35,7 @@
 
         <!-- The receiver that will trigger an intent when device has booted. Enabled by default -->
         <receiver
-            android:name=".alarm.BootCompletedReceiver"
+            android:name=".BootCompletedReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

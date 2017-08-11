@@ -28,35 +28,38 @@ public class IconUtil {
     /**
      * Returns the appropriate Skycon view depending on what the icon name value is
      */
-    public static SkyconView getSkyconView(Context context, String iconName) {
+    public static SkyconView getSkyconView(Context context, String iconName, boolean isAnimated) {
+
+        int strokeColor = Color.BLACK;
+        int fillColor = Color.TRANSPARENT;
 
         switch (iconName) {
             case "clear-day":
-                return new SunView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new SunView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "clear-night":
-                return new MoonView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new MoonView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "partly-cloudy-day":
-                return new CloudSunView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudSunView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "partly-cloudy-night":
-                return new CloudMoonView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudMoonView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "cloudy":
-                return new CloudView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "rain":
-                return new CloudRainView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudRainView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "hail":
             case "sleet":
-                return new CloudHvRainView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudHvRainView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "snow":
-                return new CloudSnowView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudSnowView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "wind":
-                return new WindView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new WindView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "fog":
-                return new CloudFogView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudFogView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             case "thunder":
             case "thunderstorm":
-                return new CloudThunderView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new CloudThunderView(context, !isAnimated, isAnimated, strokeColor, fillColor);
             default:
-                return new SunView(context, false, true, Color.parseColor("#000000"), Color.parseColor("#ffffff"));
+                return new SunView(context, !isAnimated, isAnimated, strokeColor, fillColor);
 
         }
     }

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/current_weather_card_margin"
+        app:cardCornerRadius="@dimen/current_weather_card_radius"
+        app:cardElevation="@dimen/current_weather_card_radius">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/timeSummaryContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    tools:ignore="RtlHardcoded"
+                    style="@style/HintTextView"
+                    tools:text="12:45" />
+
+                <TextView
+                    android:id="@+id/summary"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="26dp"
+                    android:layout_marginLeft="@dimen/default_horizontal_margin"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:singleLine="true"
+                    android:textSize="14sp"
+                    style="@style/SecondaryTextView"
+                    tools:text="The weather is nice and sunny. Testing overlap. Very very long string longer than two lines"
+                    tools:ignore="RtlHardcoded" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/realTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="20sp"
+                tools:text="15 ℃"
+                tools:ignore="RelativeOverlap" />
+
+            <FrameLayout
+                android:id="@+id/skycon_placeholder"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_toLeftOf="@id/realTemp"
+                tools:background="@color/grey_600"
+                android:layout_centerVertical="true"
+                android:layout_margin="12dp"
+                tools:ignore="RtlHardcoded">
+
+                <!-- Skycon view comes here -->
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

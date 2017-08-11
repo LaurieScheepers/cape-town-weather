@@ -1,4 +1,4 @@
-package co.eventcloud.capetownweather.weather.view;
+package co.eventcloud.capetownweather.weather;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -45,7 +45,7 @@ import io.realm.Realm;
  * Created by Laurie on 2017/08/11.
  */
 
-public class CurrentWeatherFragment extends Fragment implements WeatherView {
+public class CurrentWeatherFragment extends Fragment {
 
     @BindView(R.id.summary)
     TextView summary;
@@ -118,17 +118,21 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
             }
         });
 
-        setInfo();
+        setWeatherInfo();
 
         return view;
     }
 
-    private void setInfo() {
+    private void setWeatherInfo() {
         if (currentWeatherInfo != null) {
 
             // If for some reason the layout is still refreshing but we already have data, stop it
             if (swipeToRefreshLayout.isRefreshing()) {
                 swipeToRefreshLayout.setRefreshing(false);
+            }
+
+            if (realm != null && realm.isClosed()) {
+                realm = Realm.getDefaultInstance();
             }
 
             // Stop the rotating sun
@@ -148,35 +152,49 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
             simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Africa/Johannesburg"));
 
+            // Time
             time.setText(String.format(getString(R.string.time), simpleDateFormat.format(date)));
 
+            // Summmary
             summary.setText(currentWeatherInfo.getSummary());
+            summary.setSelected(true);
 
+            // Real Temp
             String temperature = String.format(getString(R.string.temperature), currentWeatherInfo.getTemperature().intValue());
             realTemperature.setText(temperature);
 
+            // Apparent Temp
             String apparentTemperatureString = String.format(getString(R.string.apparentTemperature), currentWeatherInfo.getApparentTemperature().intValue());
             apparentTemperature.setText(apparentTemperatureString);
 
-            String humidityString = String.format(getString(R.string.humidity), (int) (currentWeatherInfo.getHumidity() * 100));
+            // Humidity
+            final String humidityString = String.format(getString(R.string.humidity), (int) (currentWeatherInfo.getHumidity() * 100));
             humidity.setText(humidityString);
 
+            // Precipitation
             String precipitationString = String.format(getString(R.string.precipitation), (int) (currentWeatherInfo.getPrecipitationProbability() * 100));
             precipitation.setText(precipitationString);
 
+            // Wind speed
             String windSpeedString = String.format(getString(R.string.windSpeed), (int) (currentWeatherInfo.getWindSpeed() * 3.6));
             windSpeed.setText(windSpeedString);
 
+            // Skycon!
             String iconString = currentWeatherInfo.getIcon();
 
-            SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString);
+            final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
             skyconView.setLayoutParams(params);
 
-            // Add the correct skycon in the place holder
+            // First remove any views that might be in the placeholder container
+            if (skyconPlaceholder.getChildCount() > 0) {
+                skyconPlaceholder.removeAllViews();
+            }
+
+            // Now add the correct skycon view
             skyconPlaceholder.addView(skyconView);
 
             if (!realm.isClosed()) {
@@ -200,9 +218,12 @@ public class CurrentWeatherFragment extends Fragment implements WeatherView {
     public void onEvent(WeatherInfoUpdatedEvent event) {
         realm = Realm.getDefaultInstance();
 
+        // Get the updated weather info in the DB
         currentWeatherInfo = WeatherDao.getCurrentWeatherInfo(realm);
-        setInfo();
 
+        setWeatherInfo();
+
+        // Now remove the sticky event, we don't want it to be handled again after navigating to this fragment
         EventBus.getDefault().removeStickyEvent(event);
     }
 

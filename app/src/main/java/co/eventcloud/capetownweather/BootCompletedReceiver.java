@@ -1,4 +1,4 @@
-package co.eventcloud.capetownweather.alarm;
+package co.eventcloud.capetownweather;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

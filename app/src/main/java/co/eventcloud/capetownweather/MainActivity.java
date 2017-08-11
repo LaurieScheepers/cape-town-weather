@@ -13,8 +13,10 @@ import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import co.eventcloud.capetownweather.weather.DailyWeatherFragment;
+import co.eventcloud.capetownweather.weather.HourlyWeatherFragment;
 import co.eventcloud.capetownweather.weather.WeatherBroadcastReceiver;
-import co.eventcloud.capetownweather.weather.view.CurrentWeatherFragment;
+import co.eventcloud.capetownweather.weather.CurrentWeatherFragment;
 
 /**
  * The main activity of the app. This activity has 3 tabLayout, showing the following:
@@ -96,9 +98,9 @@ public class MainActivity extends AppCompatActivity {
                 case 0:
                     return new CurrentWeatherFragment();
                 case 1:
-                    return new Fragment();
+                    return new HourlyWeatherFragment();
                 case 2:
-                    return new Fragment();
+                    return new DailyWeatherFragment();
             }
 
             return null;
