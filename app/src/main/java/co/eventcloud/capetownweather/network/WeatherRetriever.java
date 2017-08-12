@@ -38,6 +38,11 @@ public class WeatherRetriever {
     public static final String BASE_URL = BuildConfig.API_URL;
 
     /**
+     * Flag indicating that the app is busy with an API request to get the weather
+     */
+    public static boolean busyGettingWeatherFromApi;
+
+    /**
      * Asynchronously does an API request to retrieve the weather
      * @see co.eventcloud.capetownweather.network.WeatherApi#getWeather(String, String, String, String, String, Integer, Float)
      */
@@ -84,10 +89,14 @@ public class WeatherRetriever {
      * @param chaos the chaos level (probability of server sending 503)
      */
     public static void getWeather(final Context context, final WeatherUpdateListener listener, int delay, float chaos) {
+        busyGettingWeatherFromApi = true;
+
         // Get Weather from the API
         WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", delay, chaos, new Callback<WeatherInfo>() {
             @Override
             public void onResponse(@NonNull Call<WeatherInfo> call, @NonNull Response<WeatherInfo> response) {
+                busyGettingWeatherFromApi = false;
+
                 if (response.isSuccessful()) {
                     Timber.d("YAY, WE GOT THE WEATHER, MAN!");
 

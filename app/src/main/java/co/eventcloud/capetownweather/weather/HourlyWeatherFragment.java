@@ -73,8 +73,12 @@ public class HourlyWeatherFragment extends Fragment {
 
         dayWeatherInfo = WeatherDao.getDayWeatherInfo(realm);
 
-        // If no data, request it from the server
-        if (dayWeatherInfo == null) {
+        // If no data, request it from the server. Check if there's already a request busy, if so, don't do another one.
+        // The reasoning behind this is as follows - the API request we do caters for all the weather forecasts (current, hourly and daily)
+        // and we are using adapters based on Realm data which will be automatically updated
+        // when the underlying data changes, so there's little chance of not getting the data (only if ALL the requests fail will we have no data).
+        // The flag is checked to avoid multiple simultaneous requests.
+        if (dayWeatherInfo == null && !WeatherRetriever.busyGettingWeatherFromApi) {
 
             WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                 @Override
@@ -195,8 +199,11 @@ public class HourlyWeatherFragment extends Fragment {
             @Override
             public void run() {
                 if (dayWeatherInfo == null) {
-                    swipeToRefresh.setRefreshing(true);
-                    WeatherRetriever.getWeather(getContext(), null);
+                    if (!WeatherRetriever.busyGettingWeatherFromApi) {
+                        swipeToRefresh.setRefreshing(true);
+                        WeatherRetriever.getWeather(getContext(), null);
+                    }
+
                     return;
                 }
 
