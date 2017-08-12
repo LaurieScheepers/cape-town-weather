@@ -13,7 +13,7 @@ import retrofit2.http.Query;
  * Created by Laurie on 2017/08/10.
  */
 
-public interface WeatherApi {
+interface WeatherApi {
 
     /**
      * Gets the weather from darksky.net API, using Eventcloud's proxy.
@@ -35,7 +35,7 @@ public interface WeatherApi {
      * @return The weather model object containing all the necessary information
      */
     @GET("/forecast/{api_key}/{lat},{lng}")
-    Call<WeatherInfo> getWeather(@Path("api_key") String apiKey,
+    Call<WeatherInfo> getWeather(@SuppressWarnings("SameParameterValue") @Path("api_key") String apiKey,
                                  @Path("lat") String latitude,
                                  @Path("lng") String longitude,
                                  @Query("exclude") String exclude,

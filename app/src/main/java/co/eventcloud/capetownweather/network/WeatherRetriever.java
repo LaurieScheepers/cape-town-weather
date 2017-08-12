@@ -35,7 +35,7 @@ import static co.eventcloud.capetownweather.weather.WeatherService.HIGH_TEMP_BOU
 
 public class WeatherRetriever {
 
-    public static final String BASE_URL = BuildConfig.API_URL;
+    private static final String BASE_URL = BuildConfig.API_URL;
 
     /**
      * Flag indicating that the app is busy with an API request to get the weather
@@ -46,10 +46,10 @@ public class WeatherRetriever {
      * Asynchronously does an API request to retrieve the weather
      * @see co.eventcloud.capetownweather.network.WeatherApi#getWeather(String, String, String, String, String, Integer, Float)
      */
-    public static void getWeather(@NonNull String latitude,
-                                  @NonNull String longitude,
-                                  @Nullable String exclude,
-                                  @Nullable String units,
+    private static void getWeather(@SuppressWarnings("SameParameterValue") @NonNull String latitude,
+                                  @SuppressWarnings("SameParameterValue") @NonNull String longitude,
+                                  @SuppressWarnings("SameParameterValue") @Nullable String exclude,
+                                  @SuppressWarnings("SameParameterValue") @Nullable String units,
                                   @Nullable Integer delay,
                                   @Nullable Float chaos,
                                   @NonNull Callback<WeatherInfo> callback) {
@@ -88,7 +88,7 @@ public class WeatherRetriever {
      * @param delay the delay in seconds before the response is sent by the server
      * @param chaos the chaos level (probability of server sending 503)
      */
-    public static void getWeather(final Context context, final WeatherUpdateListener listener, int delay, float chaos) {
+    private static void getWeather(final Context context, final WeatherUpdateListener listener, int delay, float chaos) {
         busyGettingWeatherFromApi = true;
 
         // Get Weather from the API
@@ -114,7 +114,7 @@ public class WeatherRetriever {
                         EventBus.getDefault().postSticky(new WeatherInfoUpdatedEvent());
 
                         if (listener != null) {
-                            listener.onWeatherFinishedUpdating(currentTemp);
+                            listener.onWeatherFinishedUpdating();
                         }
 
                         // Send notification if temperature has dropped below 15 deg C or risen above 25 deg C
@@ -129,7 +129,7 @@ public class WeatherRetriever {
 
                     Timber.e("OH NO, something went wrong with retrieving the weather. Status Code = " + statusCode);
 
-                    String errorMessage = "";
+                    String errorMessage;
 
                     // Check for errors
                     if (statusCode == 503) { // SERVICE_UNAVAILABLE - might be because of unreliable network

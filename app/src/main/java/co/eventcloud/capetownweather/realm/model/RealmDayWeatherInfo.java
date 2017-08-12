@@ -11,6 +11,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by Laurie on 2017/08/10.
  */
 
+@SuppressWarnings("unused")
 public class RealmDayWeatherInfo extends RealmObject {
 
     public static final String FIELD_ID = "id";
@@ -52,7 +53,7 @@ public class RealmDayWeatherInfo extends RealmObject {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@SuppressWarnings("SameParameterValue") int id) {
         this.id = id;
     }
 }

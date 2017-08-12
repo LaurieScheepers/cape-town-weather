@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.thbs.skycons.library.SkyconView;
 
 import java.text.SimpleDateFormat;
@@ -24,6 +25,7 @@ import co.eventcloud.capetownweather.realm.model.RealmDayInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
+import timber.log.Timber;
 
 /**
  * Adapter responsible for handling data based on the Realm Week Weather DB object (which contains a list of Day info objects)
@@ -52,6 +54,13 @@ public class DailyWeatherAdapter extends RealmRecyclerViewAdapter<RealmDayInfo, 
         final Context context = dailyWeatherViewHolder.date.getContext();
 
         RealmDayInfo realmDayInfo = getItem(position);
+
+        // This theoretically should never happen, but it if does let's log it to Crashlytics so we know where to look
+        if (realmDayInfo == null) {
+            Timber.e("ERROR: Can't update the daily weather info");
+            Crashlytics.logException(new IllegalAccessException("Error in updating the daily weather info"));
+            return;
+        }
 
         // Time is returned by API as seconds since epoch, convert it to millis
         long timeInMillis = realmDayInfo.getTime() * 1000L;
@@ -95,6 +104,7 @@ public class DailyWeatherAdapter extends RealmRecyclerViewAdapter<RealmDayInfo, 
         dailyWeatherViewHolder.skyconPlaceholder.addView(skyconView);
     }
 
+    @SuppressWarnings("WeakerAccess")
     public class DailyWeatherViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.date)

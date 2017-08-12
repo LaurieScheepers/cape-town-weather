@@ -24,7 +24,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="RelativeOverlap">
 
                 <TextView
                     android:id="@+id/date"
@@ -35,6 +36,9 @@
                     android:layout_marginLeft="@dimen/activity_horizontal_margin"
                     tools:ignore="RtlHardcoded"
                     tools:text="Fri 11/8" />
+
+                <!-- The text view below marquees. Due to a recent Android bug marquee only works
+                    when singleline is used, even though it's deprecated -->
 
                 <TextView
                     android:id="@+id/summary"
@@ -50,7 +54,7 @@
                     android:singleLine="true"
                     android:textSize="14sp"
                     tools:text="The weather is nice and sunny. Testing overlap"
-                    tools:ignore="RtlHardcoded" />
+                    tools:ignore="Deprecated,RtlHardcoded" />
 
             </LinearLayout>
 
@@ -62,7 +66,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                tools:ignore="RtlHardcoded">
 
                 <TextView
                     android:id="@+id/realTempMax"

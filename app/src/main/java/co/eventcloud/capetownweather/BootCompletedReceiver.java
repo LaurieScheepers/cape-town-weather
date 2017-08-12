@@ -15,7 +15,7 @@ import timber.log.Timber;
  */
 
 public class BootCompletedReceiver extends BroadcastReceiver {
-    WeatherBroadcastReceiver weatherBroadcastReceiver = new WeatherBroadcastReceiver();
+    private final WeatherBroadcastReceiver weatherBroadcastReceiver = new WeatherBroadcastReceiver();
 
     @Override
     public void onReceive(Context context, Intent intent) {

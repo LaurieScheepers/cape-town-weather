@@ -21,6 +21,7 @@ import timber.log.Timber;
  * Created by root on 2017/08/10.
  */
 
+@SuppressWarnings("unused")
 public class UiUtil {
 
     /**
@@ -30,7 +31,7 @@ public class UiUtil {
         fadeViewIn(v, null);
     }
 
-    public static void fadeViewIn(final View v, final FadeInAnimationCompletedCallback callback) {
+    private static void fadeViewIn(final View v, @SuppressWarnings("SameParameterValue") final FadeInAnimationCompletedCallback callback) {
         if (v == null) {
             Timber.e("Silly, you're trying to fade in a view that does not exist");
 
@@ -92,7 +93,7 @@ public class UiUtil {
      * @param view     The view that will be faded out
      * @param duration The duration in milliseconds of the fade out.
      */
-    public static void fadeViewOut(final View view, final int duration) {
+    private static void fadeViewOut(final View view, @SuppressWarnings("SameParameterValue") final int duration) {
         fadeViewOut(view, duration, null);
     }
 

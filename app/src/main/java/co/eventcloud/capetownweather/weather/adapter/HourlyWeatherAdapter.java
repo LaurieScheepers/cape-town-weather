@@ -10,6 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.thbs.skycons.library.SkyconView;
 
 import java.text.SimpleDateFormat;
@@ -24,6 +25,7 @@ import co.eventcloud.capetownweather.realm.model.RealmHourInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
 import io.realm.OrderedRealmCollection;
 import io.realm.RealmRecyclerViewAdapter;
+import timber.log.Timber;
 
 /**
  * Adapter responsible for handling data based on the Realm Day Weather DB object (which contains a list of Hour info objects)
@@ -52,6 +54,13 @@ public class HourlyWeatherAdapter extends RealmRecyclerViewAdapter<RealmHourInfo
         final Context context = hourlyWeatherViewHolder.time.getContext();
 
         RealmHourInfo realmHourInfo = getItem(position);
+
+        // This theoretically should never happen, but it if does let's log it to Crashlytics so we know where to look
+        if (realmHourInfo == null) {
+            Timber.e("ERROR: Can't update the hourly weather info");
+            Crashlytics.logException(new IllegalAccessException("Error in updating the hourly weather info"));
+            return;
+        }
 
         // Time is returned by API as seconds since epoch, convert it to millis
         long timeInMillis = realmHourInfo.getTime() * 1000L;
@@ -91,7 +100,7 @@ public class HourlyWeatherAdapter extends RealmRecyclerViewAdapter<RealmHourInfo
         hourlyWeatherViewHolder.skyconPlaceholder.addView(skyconView);
     }
 
-    public class HourlyWeatherViewHolder extends RecyclerView.ViewHolder {
+    class HourlyWeatherViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.time)
         TextView time;
@@ -102,7 +111,7 @@ public class HourlyWeatherAdapter extends RealmRecyclerViewAdapter<RealmHourInfo
         @BindView(R.id.realTemp)
         TextView realTemp;
 
-        public HourlyWeatherViewHolder(View itemView) {
+        HourlyWeatherViewHolder(View itemView) {
             super(itemView);
 
             ButterKnife.bind(this, itemView);

@@ -12,6 +12,7 @@ import java.util.List;
  * Created by Laurie on 2017/08/10.
  */
 
+@SuppressWarnings("unused")
 public class WeekWeatherInfo {
 
     @SerializedName("summary")

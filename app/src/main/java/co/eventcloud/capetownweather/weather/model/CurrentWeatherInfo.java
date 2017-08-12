@@ -10,6 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by Laurie on 2017/08/10.
  */
 
+@SuppressWarnings("unused")
 public class CurrentWeatherInfo {
 
     @SerializedName("time")

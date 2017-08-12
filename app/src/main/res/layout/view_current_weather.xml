@@ -62,6 +62,9 @@
                 tools:ignore="RtlHardcoded"
                 tools:text="12:45 SAST" />
 
+            <!-- The text view below marquees. Due to a recent Android bug marquee only works
+             when singleline is used, even though it's deprecated -->
+
             <TextView
                 android:id="@+id/summary"
                 android:layout_width="match_parent"
@@ -74,7 +77,8 @@
                 android:singleLine="true"
                 android:textSize="18sp"
                 style="@style/PrimaryTextView"
-                tools:text="The weather is nice and sunny." />
+                tools:text="The weather is nice and sunny."
+                tools:ignore="Deprecated" />
 
             <TextView
                 android:id="@+id/real_temperature"

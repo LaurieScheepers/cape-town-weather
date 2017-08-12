@@ -59,9 +59,7 @@ public class WeatherDao {
      */
     public static RealmCurrentWeatherInfo getCurrentWeatherInfo(@NonNull Realm realm) {
 
-        RealmCurrentWeatherInfo currentWeatherInfo = realm.where(RealmCurrentWeatherInfo.class).findFirst();
-
-        return currentWeatherInfo;
+        return realm.where(RealmCurrentWeatherInfo.class).findFirst();
     }
 
     public static void saveWeekWeatherInfo(@NonNull WeekWeatherInfo weekWeatherInfo) {
@@ -111,9 +109,8 @@ public class WeatherDao {
     }
 
     public static RealmWeekWeatherInfo getWeekWeatherInfo(@NonNull Realm realm) {
-        RealmWeekWeatherInfo realmWeekWeatherInfo = realm.where(RealmWeekWeatherInfo.class).findFirst();
 
-        return realmWeekWeatherInfo;
+        return realm.where(RealmWeekWeatherInfo.class).findFirst();
     }
 
     public static void saveDayWeatherInfo(@NonNull DayWeatherInfo dayWeatherInfo) {
@@ -161,8 +158,6 @@ public class WeatherDao {
     }
 
     public static RealmDayWeatherInfo getDayWeatherInfo(@NonNull Realm realm) {
-        RealmDayWeatherInfo realmDayWeatherInfo = realm.where(RealmDayWeatherInfo.class).findFirst();
-
-        return realmDayWeatherInfo;
+        return realm.where(RealmDayWeatherInfo.class).findFirst();
     }
 }

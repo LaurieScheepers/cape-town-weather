@@ -5,18 +5,16 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import co.eventcloud.capetownweather.weather.CurrentWeatherFragment;
 import co.eventcloud.capetownweather.weather.DailyWeatherFragment;
 import co.eventcloud.capetownweather.weather.HourlyWeatherFragment;
 import co.eventcloud.capetownweather.weather.WeatherBroadcastReceiver;
-import co.eventcloud.capetownweather.weather.CurrentWeatherFragment;
 
 /**
  * The main activity of the app. This activity has 3 tabLayout, showing the following:
@@ -29,35 +27,26 @@ import co.eventcloud.capetownweather.weather.CurrentWeatherFragment;
  * <p>
  * Created by Laurie on 2017/08/10.
  */
+@SuppressWarnings({"CanBeFinal", "unused"})
 public class MainActivity extends AppCompatActivity {
 
     /**
      * The toolbar showing the title of the app
      */
     @BindView(R.id.toolbar)
-    Toolbar toolbar;
+    private Toolbar toolbar;
 
     /**
      * The tab layout containing three tabs - Now, Hourly, and Daily forecasts
      */
     @BindView(R.id.tabLayout)
-    TabLayout tabLayout;
+    private TabLayout tabLayout;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     @BindView(R.id.viewPager)
-    ViewPager viewPager;
-
-    /**
-     * The {@link PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         viewPager.setAdapter(mSectionsPagerAdapter);
@@ -84,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

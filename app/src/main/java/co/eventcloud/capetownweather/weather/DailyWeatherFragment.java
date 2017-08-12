@@ -44,21 +44,23 @@ import io.realm.Realm;
  * Created by root on 2017/08/11.
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"})
 public class DailyWeatherFragment extends Fragment {
 
     @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
-    Unbinder unbinder;
+    private RecyclerView recyclerView;
+    private Unbinder unbinder;
     @BindView(R.id.summary)
-    TextView summary;
+    private TextView summary;
     @BindView(R.id.skycon_placeholder)
-    FrameLayout skyconPlaceholder;
+    private FrameLayout skyconPlaceholder;
     @BindView(R.id.swipeToRefresh)
-    SwipeRefreshLayout swipeToRefresh;
+    private SwipeRefreshLayout swipeToRefresh;
     @BindView(R.id.buttonTryAgain)
-    Button buttonTryAgain;
+    private Button buttonTryAgain;
     @BindView(R.id.errorLayout)
-    RelativeLayout errorLayout;
+    private RelativeLayout errorLayout;
+
     private Realm realm;
 
     private RealmWeekWeatherInfo weekWeatherInfo;
@@ -84,7 +86,7 @@ public class DailyWeatherFragment extends Fragment {
             if (!WeatherRetriever.busyGettingWeatherFromApi) {
                 WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
-                    public void onWeatherFinishedUpdating(final int temp) {
+                    public void onWeatherFinishedUpdating() {
                         // Get the updated weather info in the DB
                         weekWeatherInfo = WeatherDao.getWeekWeatherInfo(realm);
 
@@ -120,7 +122,7 @@ public class DailyWeatherFragment extends Fragment {
             public void onRefresh() {
                 WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
-                    public void onWeatherFinishedUpdating(final int temp) {
+                    public void onWeatherFinishedUpdating() {
                         swipeToRefresh.setRefreshing(false);
                     }
 
@@ -168,7 +170,7 @@ public class DailyWeatherFragment extends Fragment {
 
                             WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                                 @Override
-                                public void onWeatherFinishedUpdating(int temp) {
+                                public void onWeatherFinishedUpdating() {
                                     if (errorLayout != null) {
                                         errorLayout.setVisibility(View.GONE);
                                     }

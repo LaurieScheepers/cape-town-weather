@@ -40,6 +40,7 @@ public class RealmMigrationHandler implements RealmMigration {
         realm.close();
     }
 
+    @SuppressWarnings("UnusedAssignment")
     @Override
     public void migrate(DynamicRealm realm, long oldVersion, long newVersion) {
 

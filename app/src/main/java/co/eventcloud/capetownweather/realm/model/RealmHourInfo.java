@@ -10,6 +10,7 @@ import io.realm.annotations.PrimaryKey;
  * Created by root on 2017/08/10.
  */
 
+@SuppressWarnings("unused")
 public class RealmHourInfo extends RealmObject {
 
     public static final String FIELD_ID = "id";

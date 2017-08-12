@@ -12,7 +12,7 @@ public interface WeatherUpdateListener {
     /**
      * Callback invoked when the weather has finished updating
      */
-    void onWeatherFinishedUpdating(final int temp);
+    void onWeatherFinishedUpdating();
 
     /**
      * Callback invoked when there was an error in getting the weather from the API

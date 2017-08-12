@@ -20,11 +20,13 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:icon">
+        tools:replace="android:icon"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning">
 
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,12 +47,12 @@
         <!-- The receiver that will trigger an intent periodically. This is enabled when the "alarm" is set -->
         <receiver
             android:name=".weather.WeatherBroadcastReceiver"
-            android:enabled="false"></receiver>
+            android:enabled="false" />
 
         <!-- The service that handles the syncing of data in the background -->
         <service
             android:name=".weather.WeatherService"
-            android:exported="false"></service>
+            android:exported="false" />
 
         <!-- Meta data for Fabric (Crashlytics) -->
         <meta-data

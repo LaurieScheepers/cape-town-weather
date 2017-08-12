@@ -8,6 +8,7 @@ package co.eventcloud.capetownweather.utils.callback;
  * Created by Laurie on 2017/05/29.
  */
 
+@SuppressWarnings("unused")
 public interface FadeInAnimationCompletedCallback {
 
     void onCompleted();

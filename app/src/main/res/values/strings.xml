@@ -17,8 +17,8 @@
     <string name="try_again">Try again</string>
 
     <string name="coldWarningNotificationHeading">Brrr</string>
-    <string name="coldWarningNotificationText">It\'s getting colder... Current temperature: %1$d ℃</string>
+    <string name="coldWarningNotificationText">It\'s getting colder… Current temperature: %1$d ℃</string>
 
     <string name="hotWarningNotificationHeading">Eish!</string>
-    <string name="hotWarningNotificationText">It\'s getting warmer... Current temperature: %1$d ℃</string>
+    <string name="hotWarningNotificationText">It\'s getting warmer… Current temperature: %1$d ℃</string>
 </resources>

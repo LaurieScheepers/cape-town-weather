@@ -52,49 +52,48 @@ import io.realm.Realm;
  * Created by Laurie on 2017/08/11.
  */
 
+@SuppressWarnings({"CanBeFinal", "unused"})
 public class CurrentWeatherFragment extends Fragment {
 
     @BindView(R.id.summary)
-    TextView summary;
+    private TextView summary;
     @BindView(R.id.real_temperature)
-    TextView realTemperature;
+    private TextView realTemperature;
     @BindView(R.id.skycon_placeholder)
-    FrameLayout skyconPlaceholder;
+    private FrameLayout skyconPlaceholder;
     @BindView(R.id.apparent_temperature)
-    TextView apparentTemperature;
+    private TextView apparentTemperature;
     @BindView(R.id.precipitation)
-    TextView precipitation;
+    private TextView precipitation;
     @BindView(R.id.humidity)
-    TextView humidity;
+    private TextView humidity;
     @BindView(R.id.wind_speed)
-    TextView windSpeed;
+    private TextView windSpeed;
 
     @BindView(R.id.time)
-    TextView time;
-    @BindView(R.id.humidity_wind_container)
-    LinearLayout humidityWindContainer;
+    private TextView time;
     @BindView(R.id.shimmerFrameLayout)
-    ShimmerFrameLayout shimmerFrameLayout;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     // Keep reference to the current weather DB object
-    RealmCurrentWeatherInfo currentWeatherInfo;
+    private RealmCurrentWeatherInfo currentWeatherInfo;
 
     // Butterknife unbinder
-    Unbinder unbinder;
+    private Unbinder unbinder;
 
     /**
      * The swipe to refresh layout, that will do the GET weather API call once swiped down
      */
     @BindView(R.id.swipeToRefresh)
-    SwipeRefreshLayout swipeToRefreshLayout;
+    private SwipeRefreshLayout swipeToRefreshLayout;
     @BindView(R.id.sunLoadingIndicator)
-    ImageView sunLoadingIndicator;
+    private ImageView sunLoadingIndicator;
     @BindView(R.id.errorLayout)
-    RelativeLayout errorLayout;
+    private RelativeLayout errorLayout;
     @BindView(R.id.cardViewWeather)
-    CardView cardViewWeather;
+    private CardView cardViewWeather;
     @BindView(R.id.buttonTryAgain)
-    Button buttonTryAgain;
+    private Button buttonTryAgain;
 
     private Realm realm;
 
@@ -126,7 +125,7 @@ public class CurrentWeatherFragment extends Fragment {
 
                 WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
-                    public void onWeatherFinishedUpdating(final int temp) {
+                    public void onWeatherFinishedUpdating() {
                         hideLoadingView();
                     }
 
@@ -228,7 +227,7 @@ public class CurrentWeatherFragment extends Fragment {
 
                             WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
                                 @Override
-                                public void onWeatherFinishedUpdating(final int temp) {
+                                public void onWeatherFinishedUpdating() {
                                     hideLoadingView();
                                 }
 

@@ -20,16 +20,6 @@ import timber.log.Timber;
 
 public class WeatherBroadcastReceiver extends WakefulBroadcastReceiver {
 
-    /**
-     * The alarm manager responsible for setting the alarm
-     */
-    private AlarmManager alarmManager;
-
-    /**
-     * The intent that must be delivered each time the alarm goes off
-     */
-    private PendingIntent alarmIntent;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         Timber.d("Alarm has gone off, start the service");
@@ -38,9 +28,14 @@ public class WeatherBroadcastReceiver extends WakefulBroadcastReceiver {
     }
 
     public void setAlarm(Context context) {
-        alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        // The alarm manager responsible for setting the alarm
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
         Intent intent = new Intent(context, WeatherBroadcastReceiver.class);
-        alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
+
+        // The intent that must be delivered each time the alarm goes off
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 
         Timber.d("Setting the alarm");
 
