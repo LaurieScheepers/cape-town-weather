@@ -48,17 +48,17 @@ import io.realm.Realm;
 public class HourlyWeatherFragment extends Fragment {
 
     @BindView(R.id.recyclerView)
-    private RecyclerView recyclerView;
+    RecyclerView recyclerView;
     @BindView(R.id.summary)
-    private TextView summary;
+    TextView summary;
     @BindView(R.id.skycon_placeholder)
-    private FrameLayout skyconPlaceholder;
+    FrameLayout skyconPlaceholder;
     @BindView(R.id.swipeToRefresh)
-    private SwipeRefreshLayout swipeToRefresh;
+    SwipeRefreshLayout swipeToRefresh;
     @BindView(R.id.buttonTryAgain)
-    private Button buttonTryAgain;
+    Button buttonTryAgain;
     @BindView(R.id.errorLayout)
-    private RelativeLayout errorLayout;
+    RelativeLayout errorLayout;
 
     private Unbinder unbinder;
 

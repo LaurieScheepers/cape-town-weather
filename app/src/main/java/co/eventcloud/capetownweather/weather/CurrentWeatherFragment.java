@@ -56,24 +56,24 @@ import io.realm.Realm;
 public class CurrentWeatherFragment extends Fragment {
 
     @BindView(R.id.summary)
-    private TextView summary;
+    TextView summary;
     @BindView(R.id.real_temperature)
-    private TextView realTemperature;
+    TextView realTemperature;
     @BindView(R.id.skycon_placeholder)
-    private FrameLayout skyconPlaceholder;
+    FrameLayout skyconPlaceholder;
     @BindView(R.id.apparent_temperature)
-    private TextView apparentTemperature;
+    TextView apparentTemperature;
     @BindView(R.id.precipitation)
-    private TextView precipitation;
+    TextView precipitation;
     @BindView(R.id.humidity)
-    private TextView humidity;
+    TextView humidity;
     @BindView(R.id.wind_speed)
-    private TextView windSpeed;
+    TextView windSpeed;
 
     @BindView(R.id.time)
-    private TextView time;
+    TextView time;
     @BindView(R.id.shimmerFrameLayout)
-    private ShimmerFrameLayout shimmerFrameLayout;
+    ShimmerFrameLayout shimmerFrameLayout;
 
     // Keep reference to the current weather DB object
     private RealmCurrentWeatherInfo currentWeatherInfo;
@@ -85,15 +85,15 @@ public class CurrentWeatherFragment extends Fragment {
      * The swipe to refresh layout, that will do the GET weather API call once swiped down
      */
     @BindView(R.id.swipeToRefresh)
-    private SwipeRefreshLayout swipeToRefreshLayout;
+    SwipeRefreshLayout swipeToRefreshLayout;
     @BindView(R.id.sunLoadingIndicator)
-    private ImageView sunLoadingIndicator;
+    ImageView sunLoadingIndicator;
     @BindView(R.id.errorLayout)
-    private RelativeLayout errorLayout;
+    RelativeLayout errorLayout;
     @BindView(R.id.cardViewWeather)
-    private CardView cardViewWeather;
+    CardView cardViewWeather;
     @BindView(R.id.buttonTryAgain)
-    private Button buttonTryAgain;
+    Button buttonTryAgain;
 
     private Realm realm;
 

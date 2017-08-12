@@ -34,19 +34,19 @@ public class MainActivity extends AppCompatActivity {
      * The toolbar showing the title of the app
      */
     @BindView(R.id.toolbar)
-    private Toolbar toolbar;
+    Toolbar toolbar;
 
     /**
      * The tab layout containing three tabs - Now, Hourly, and Daily forecasts
      */
     @BindView(R.id.tabLayout)
-    private TabLayout tabLayout;
+    TabLayout tabLayout;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     @BindView(R.id.viewPager)
-    private ViewPager viewPager;
+    ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
