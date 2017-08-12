@@ -105,6 +105,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerInParent="true"
+                android:visibility="invisible"
                 android:layout_margin="4dp">
 
                 <!-- Skycon view comes here -->

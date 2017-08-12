@@ -161,6 +161,6 @@ public class WeatherRetriever {
      * Helper method to do the GET weather API call. This method also handles the API response and the updating of the database.
      */
     public static void getWeather(final Context context, final WeatherUpdateListener listener) {
-        getWeather(context, listener, BuildConfig.DEBUG ? 3 : 0, BuildConfig.DEBUG ? 0.5f : 0f);
+        getWeather(context, listener, BuildConfig.DEBUG ? 0 : 0, BuildConfig.DEBUG ? 0f : 0f);
     }
 }

@@ -143,7 +143,7 @@ public class CurrentWeatherFragment extends Fragment {
     }
 
     private void showLoadingView() {
-        UiUtil.fadeViewOut(skyconPlaceholder, 500, new FadeOutAnimationCompletedCallback() {
+        UiUtil.fadeViewOut(skyconPlaceholder, 250, new FadeOutAnimationCompletedCallback() {
             @Override
             public void onCompleted() {
                 getActivity().runOnUiThread(new Runnable() {
@@ -329,6 +329,9 @@ public class CurrentWeatherFragment extends Fragment {
 
                         // Now add the correct skycon view
                         skyconPlaceholder.addView(skyconView);
+
+                        // Finally fade the view in
+                        UiUtil.fadeViewIn(skyconPlaceholder);
                     }
 
                     if (!realm.isClosed()) {

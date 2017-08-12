@@ -1,9 +1,7 @@
 package co.eventcloud.capetownweather.utils;
 
-import android.animation.Animator;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -42,41 +40,33 @@ public class UiUtil {
         }
 
         if (v.getVisibility() != View.VISIBLE) {
-            ViewPropertyAnimator anim = v.animate();
-            if (anim != null) {
-                anim.setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
+            Animation fadeIn = new AlphaAnimation(0, 1);
+            fadeIn.setInterpolator(new AccelerateInterpolator());
+            fadeIn.setDuration(500);
+
+            fadeIn.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    if (v.getVisibility() != View.VISIBLE) {
+                        Timber.d("For some reason the view is not visible after fade in. Setting it to visible.");
+                        v.setVisibility(View.VISIBLE);
                     }
 
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (v.getVisibility() != View.VISIBLE) {
-                            Timber.d("For some reason the view is not visible after fade in. Setting it to visible.");
-                            v.setVisibility(View.VISIBLE);
-                        }
-
-                        if (callback != null) {
-                            callback.onCompleted();
-                        }
+                    if (callback != null) {
+                        callback.onCompleted();
                     }
+                }
 
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                    }
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
 
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-                    }
-                });
-
-                v.setAlpha(0);
-                v.setVisibility(View.VISIBLE);
-                anim.alpha(1);
-            } else {
-                v.setAlpha(1);
-                v.setVisibility(View.VISIBLE);
-            }
+            v.startAnimation(fadeIn);
         }
     }
 
