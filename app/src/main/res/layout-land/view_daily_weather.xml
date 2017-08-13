@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cardViewWeather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/current_weather_card_margin"
+        app:cardCornerRadius="@dimen/current_weather_card_radius"
+        app:cardElevation="@dimen/current_weather_card_radius">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/dateSummaryContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                tools:ignore="RelativeOverlap">
+
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    style="@style/HintTextView"
+                    android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                    tools:ignore="RtlHardcoded"
+                    tools:text="Fri 11/8" />
+
+                <!-- The text view below marquees. Due to a recent Android bug marquee only works
+                    when singleline is used, even though it's deprecated -->
+
+                <TextView
+                    android:id="@+id/summary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="26dp"
+                    android:layout_marginLeft="@dimen/default_horizontal_margin"
+                    style="@style/SecondaryTextView"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:ellipsize="marquee"
+                    android:focusable="true"
+                    android:singleLine="true"
+                    android:textSize="14sp"
+                    tools:text="The weather is nice and sunny. Testing long lines. Blah blah blah"
+                    tools:ignore="Deprecated,RtlHardcoded" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/tempContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:orientation="vertical"
+                tools:ignore="RtlHardcoded">
+
+                <TextView
+                    android:id="@+id/realTempMax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:layout_marginBottom="8dp"
+                    android:textSize="20sp"
+                    android:drawableLeft="@drawable/ic_arrow_up"
+                    android:drawablePadding="4dp"
+                    tools:text="15 ℃"
+                    tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+                <TextView
+                    android:id="@+id/realTempMin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20sp"
+                    android:drawableLeft="@drawable/ic_arrow_down"
+                    android:drawablePadding="4dp"
+                    tools:text="4 ℃"
+                    tools:ignore="RelativeOverlap,RtlHardcoded" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/skycon_placeholder"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_toLeftOf="@id/tempContainer"
+                tools:background="@color/grey_600"
+                android:layout_centerVertical="true"
+                android:layout_margin="18dp"
+                tools:ignore="RtlHardcoded">
+
+                <!-- Skycon view comes here -->
+
+            </FrameLayout>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
