@@ -29,7 +29,7 @@ import timber.log.Timber;
 
 /**
  * Adapter responsible for handling data based on the Realm Day Weather DB object (which contains a list of Hour info objects)
- * <p>
+ *
  * <p/>
  * Created by Laurie on 2017/08/11.
  */

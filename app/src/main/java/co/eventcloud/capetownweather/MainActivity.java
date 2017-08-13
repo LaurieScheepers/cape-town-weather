@@ -17,7 +17,7 @@ import co.eventcloud.capetownweather.weather.HourlyWeatherFragment;
 import co.eventcloud.capetownweather.weather.WeatherBroadcastReceiver;
 
 /**
- * The main activity of the app. This activity has 3 tabLayout, showing the following:
+ * The main activity of the app. This activity has 3 tabs, showing the following:
  * <p>
  * <ol>
  * <li>Current Forecast (what the weather is like now at this moment)</li>

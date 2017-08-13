@@ -29,7 +29,7 @@ import timber.log.Timber;
 
 /**
  * Adapter responsible for handling data based on the Realm Week Weather DB object (which contains a list of Day info objects)
- * <p>
+ *
  * <p/>
  * Created by Laurie on 2017/08/11.
  */

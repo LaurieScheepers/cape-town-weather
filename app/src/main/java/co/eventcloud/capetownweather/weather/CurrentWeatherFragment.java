@@ -47,7 +47,7 @@ import io.realm.Realm;
 
 /**
  * Fragment showing the current weather
- * <p>
+ *
  * <p/>
  * Created by Laurie on 2017/08/11.
  */
