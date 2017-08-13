@@ -100,8 +100,8 @@
 
             <FrameLayout
                 android:id="@+id/skycon_placeholder"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerInParent="true"

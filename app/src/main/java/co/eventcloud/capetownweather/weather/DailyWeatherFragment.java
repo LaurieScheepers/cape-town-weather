@@ -83,6 +83,8 @@ public class DailyWeatherFragment extends Fragment {
 
         weekWeatherInfo = WeatherDao.getWeekWeatherInfo(realm);
 
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+
         // If no data, request it from the server.
         if (weekWeatherInfo == null) {
 
@@ -231,7 +233,6 @@ public class DailyWeatherFragment extends Fragment {
 
         linearLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(linearLayoutManager);
-
         recyclerView.setAdapter(adapter);
     }
 

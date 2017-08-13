@@ -83,6 +83,8 @@ public class HourlyWeatherFragment extends Fragment {
 
         dayWeatherInfo = WeatherDao.getDayWeatherInfo(realm);
 
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+
         // If no data, request it from the server.
         if (dayWeatherInfo == null) {
 
@@ -224,7 +226,6 @@ public class HourlyWeatherFragment extends Fragment {
         recyclerView.setHasFixedSize(true); // For better performance
 
         linearLayoutManager = new LinearLayoutManager(getActivity());
-
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
     }
