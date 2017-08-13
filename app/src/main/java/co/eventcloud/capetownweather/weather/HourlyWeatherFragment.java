@@ -167,59 +167,61 @@ public class HourlyWeatherFragment extends Fragment {
     }
 
     private void showErrorView(final String errorMessage) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (swipeToRefresh != null) {
-                    swipeToRefresh.setRefreshing(false);
-                }
-
-                Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
-
-                // If there's no data in the db show the error card
-                if (dayWeatherInfo == null || dayWeatherInfo.getData().size() == 0) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
                     if (swipeToRefresh != null) {
-                        swipeToRefresh.setVisibility(View.GONE);
+                        swipeToRefresh.setRefreshing(false);
                     }
 
-                    errorLayout.setVisibility(View.VISIBLE);
-                }
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
 
-                buttonTryAgain.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                    // If there's no data in the db show the error card
+                    if (dayWeatherInfo == null || dayWeatherInfo.getData().size() == 0) {
                         if (swipeToRefresh != null) {
-                            swipeToRefresh.setVisibility(View.VISIBLE);
-                            swipeToRefresh.setRefreshing(true);
+                            swipeToRefresh.setVisibility(View.GONE);
                         }
 
-                        WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
-                            @Override
-                            public void onWeatherFinishedUpdating() {
-                                if (errorLayout != null) {
-                                    errorLayout.setVisibility(View.GONE);
-                                }
+                        errorLayout.setVisibility(View.VISIBLE);
+                    }
 
-                                if (swipeToRefresh != null) {
-                                    if (swipeToRefresh.getVisibility() == View.GONE) {
-                                        swipeToRefresh.setVisibility(View.VISIBLE);
+                    buttonTryAgain.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (swipeToRefresh != null) {
+                                swipeToRefresh.setVisibility(View.VISIBLE);
+                                swipeToRefresh.setRefreshing(true);
+                            }
+
+                            WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                                @Override
+                                public void onWeatherFinishedUpdating() {
+                                    if (errorLayout != null) {
+                                        errorLayout.setVisibility(View.GONE);
                                     }
 
-                                    swipeToRefresh.setRefreshing(false);
+                                    if (swipeToRefresh != null) {
+                                        if (swipeToRefresh.getVisibility() == View.GONE) {
+                                            swipeToRefresh.setVisibility(View.VISIBLE);
+                                        }
+
+                                        swipeToRefresh.setRefreshing(false);
+                                    }
+
+                                    setWeatherInfo();
                                 }
 
-                                setWeatherInfo();
-                            }
-
-                            @Override
-                            public void onWeatherUpdateError(String errorMessage) {
-                                showErrorView(errorMessage);
-                            }
-                        });
-                    }
-                });
-            }
-        });
+                                @Override
+                                public void onWeatherUpdateError(String errorMessage) {
+                                    showErrorView(errorMessage);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
     }
 
     private void setRecyclerViewAttributes() {
@@ -231,55 +233,57 @@ public class HourlyWeatherFragment extends Fragment {
     }
 
     private void setWeatherInfo() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (dayWeatherInfo == null) {
-                    if (!WeatherRetriever.busyGettingWeatherFromApi) {
-                        swipeToRefresh.setRefreshing(true);
-                        WeatherRetriever.getWeather(getContext(), null);
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (dayWeatherInfo == null) {
+                        if (!WeatherRetriever.busyGettingWeatherFromApi) {
+                            swipeToRefresh.setRefreshing(true);
+                            WeatherRetriever.getWeather(getContext(), null);
+                        }
+
+                        return;
                     }
 
-                    return;
+                    if (adapter == null) {
+                        adapter = new HourlyWeatherAdapter(dayWeatherInfo.getData());
+                    }
+
+                    realm = Realm.getDefaultInstance();
+
+                    setRecyclerViewAttributes();
+
+                    swipeToRefresh.setRefreshing(false);
+
+                    // Summary
+                    summary.setText(dayWeatherInfo.getSummary());
+                    summary.setSelected(true);
+
+                    // Skycon!
+                    String iconString = dayWeatherInfo.getIcon();
+
+                    final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                    skyconView.setLayoutParams(params);
+
+                    // First remove any views that might be in the placeholder container
+                    if (skyconPlaceholder.getChildCount() > 0) {
+                        skyconPlaceholder.removeAllViews();
+                    }
+
+                    // Now add the correct skycon view
+                    skyconPlaceholder.addView(skyconView);
+
+                    if (!realm.isClosed()) {
+                        realm.close();
+                    }
                 }
-
-                if (adapter == null) {
-                    adapter = new HourlyWeatherAdapter(dayWeatherInfo.getData());
-                }
-
-                realm = Realm.getDefaultInstance();
-
-                setRecyclerViewAttributes();
-
-                swipeToRefresh.setRefreshing(false);
-
-                // Summary
-                summary.setText(dayWeatherInfo.getSummary());
-                summary.setSelected(true);
-
-                // Skycon!
-                String iconString = dayWeatherInfo.getIcon();
-
-                final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                skyconView.setLayoutParams(params);
-
-                // First remove any views that might be in the placeholder container
-                if (skyconPlaceholder.getChildCount() > 0) {
-                    skyconPlaceholder.removeAllViews();
-                }
-
-                // Now add the correct skycon view
-                skyconPlaceholder.addView(skyconView);
-
-                if (!realm.isClosed()) {
-                    realm.close();
-                }
-            }
-        });
+            });
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)

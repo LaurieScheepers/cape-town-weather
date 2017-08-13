@@ -149,63 +149,65 @@ public class DailyWeatherFragment extends Fragment {
 
     private void showErrorView(final String errorMessage) {
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (swipeToRefresh != null) {
-                    swipeToRefresh.setRefreshing(false);
-                }
-
-                Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
-
-                // If there's no data in the db show the error card
-                if (weekWeatherInfo == null || weekWeatherInfo.getData().size() == 0) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
                     if (swipeToRefresh != null) {
-                        swipeToRefresh.setVisibility(View.GONE);
+                        swipeToRefresh.setRefreshing(false);
                     }
 
-                    if (errorLayout != null) {
-                        errorLayout.setVisibility(View.VISIBLE);
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+
+                    // If there's no data in the db show the error card
+                    if (weekWeatherInfo == null || weekWeatherInfo.getData().size() == 0) {
+                        if (swipeToRefresh != null) {
+                            swipeToRefresh.setVisibility(View.GONE);
+                        }
+
+                        if (errorLayout != null) {
+                            errorLayout.setVisibility(View.VISIBLE);
+                        }
                     }
-                }
 
-                if (buttonTryAgain != null) {
-                    buttonTryAgain.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (swipeToRefresh != null) {
-                                swipeToRefresh.setVisibility(View.VISIBLE);
-                                swipeToRefresh.setRefreshing(true);
-                            }
+                    if (buttonTryAgain != null) {
+                        buttonTryAgain.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (swipeToRefresh != null) {
+                                    swipeToRefresh.setVisibility(View.VISIBLE);
+                                    swipeToRefresh.setRefreshing(true);
+                                }
 
-                            WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
-                                @Override
-                                public void onWeatherFinishedUpdating() {
-                                    if (errorLayout != null) {
-                                        errorLayout.setVisibility(View.GONE);
-                                    }
-
-                                    if (swipeToRefresh != null) {
-                                        if (swipeToRefresh.getVisibility() == View.GONE) {
-                                            swipeToRefresh.setVisibility(View.VISIBLE);
+                                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                                    @Override
+                                    public void onWeatherFinishedUpdating() {
+                                        if (errorLayout != null) {
+                                            errorLayout.setVisibility(View.GONE);
                                         }
 
-                                        swipeToRefresh.setRefreshing(false);
+                                        if (swipeToRefresh != null) {
+                                            if (swipeToRefresh.getVisibility() == View.GONE) {
+                                                swipeToRefresh.setVisibility(View.VISIBLE);
+                                            }
+
+                                            swipeToRefresh.setRefreshing(false);
+                                        }
+
+                                        setWeatherInfo();
                                     }
 
-                                    setWeatherInfo();
-                                }
-
-                                @Override
-                                public void onWeatherUpdateError(String errorMessage) {
-                                    showErrorView(errorMessage);
-                                }
-                            });
-                        }
-                    });
+                                    @Override
+                                    public void onWeatherUpdateError(String errorMessage) {
+                                        showErrorView(errorMessage);
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     @Override
@@ -237,55 +239,57 @@ public class DailyWeatherFragment extends Fragment {
     }
 
     private void setWeatherInfo() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (weekWeatherInfo == null) {
-                    if (!WeatherRetriever.busyGettingWeatherFromApi) {
-                        swipeToRefresh.setRefreshing(true);
-                        WeatherRetriever.getWeather(getContext(), null);
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if (weekWeatherInfo == null) {
+                        if (!WeatherRetriever.busyGettingWeatherFromApi) {
+                            swipeToRefresh.setRefreshing(true);
+                            WeatherRetriever.getWeather(getContext(), null);
+                        }
+
+                        return;
                     }
 
-                    return;
+                    if (adapter == null) {
+                        adapter = new DailyWeatherAdapter(weekWeatherInfo.getData());
+                    }
+
+                    realm = Realm.getDefaultInstance();
+
+                    setRecyclerViewAttributes();
+
+                    swipeToRefresh.setRefreshing(false);
+
+                    // Summary
+                    summary.setText(weekWeatherInfo.getSummary());
+                    summary.setSelected(true);
+
+                    // Skycon!
+                    String iconString = weekWeatherInfo.getIcon();
+
+                    final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
+
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                    skyconView.setLayoutParams(params);
+
+                    // First remove any views that might be in the placeholder container
+                    if (skyconPlaceholder.getChildCount() > 0) {
+                        skyconPlaceholder.removeAllViews();
+                    }
+
+                    // Now add the correct skycon view
+                    skyconPlaceholder.addView(skyconView);
+
+                    if (!realm.isClosed()) {
+                        realm.close();
+                    }
                 }
-
-                if (adapter == null) {
-                    adapter = new DailyWeatherAdapter(weekWeatherInfo.getData());
-                }
-
-                realm = Realm.getDefaultInstance();
-
-                setRecyclerViewAttributes();
-
-                swipeToRefresh.setRefreshing(false);
-
-                // Summary
-                summary.setText(weekWeatherInfo.getSummary());
-                summary.setSelected(true);
-
-                // Skycon!
-                String iconString = weekWeatherInfo.getIcon();
-
-                final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
-
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                skyconView.setLayoutParams(params);
-
-                // First remove any views that might be in the placeholder container
-                if (skyconPlaceholder.getChildCount() > 0) {
-                    skyconPlaceholder.removeAllViews();
-                }
-
-                // Now add the correct skycon view
-                skyconPlaceholder.addView(skyconView);
-
-                if (!realm.isClosed()) {
-                    realm.close();
-                }
-            }
-        });
+            });
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)

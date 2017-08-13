@@ -171,28 +171,30 @@ public class CurrentWeatherFragment extends Fragment {
         // This can happen because of communication happening across different threads (e.g. the service calling the event to update the UI)
         // These checks are just for sanity sake, making everything run on the UI thread should solve any issues
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                // Disable refreshing of swipe to refresh layout
-                if (swipeToRefreshLayout != null) {
-                    swipeToRefreshLayout.setRefreshing(false);
-                }
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    // Disable refreshing of swipe to refresh layout
+                    if (swipeToRefreshLayout != null) {
+                        swipeToRefreshLayout.setRefreshing(false);
+                    }
 
-                if (sunLoadingIndicator != null) {
-                    // Stop the rotating sun
-                    UiUtil.stopRotateForever(sunLoadingIndicator);
-                    sunLoadingIndicator.setVisibility(View.GONE);
-                }
+                    if (sunLoadingIndicator != null) {
+                        // Stop the rotating sun
+                        UiUtil.stopRotateForever(sunLoadingIndicator);
+                        sunLoadingIndicator.setVisibility(View.GONE);
+                    }
 
-                if (shimmerFrameLayout != null) {
-                    // Stop the amazing shimmer animation
-                    shimmerFrameLayout.stopShimmerAnimation();
-                }
+                    if (shimmerFrameLayout != null) {
+                        // Stop the amazing shimmer animation
+                        shimmerFrameLayout.stopShimmerAnimation();
+                    }
 
-                UiUtil.fadeViewIn(skyconPlaceholder);
-            }
-        });
+                    UiUtil.fadeViewIn(skyconPlaceholder);
+                }
+            });
+        }
     }
 
     private void showErrorView(final String errorMessage) {
@@ -200,47 +202,49 @@ public class CurrentWeatherFragment extends Fragment {
         // This can happen because of communication happening across different threads (e.g. the service calling the event to update the UI)
         // These checks are just for sanity sake, making everything run on the UI thread should solve any issues
 
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
 
-                hideLoadingView();
+                    hideLoadingView();
 
-                // If there hasn't been any weather info saved to the DB, show the error card view
-                if (currentWeatherInfo == null || currentWeatherInfo.getTemperature() == null) {
-                    if (cardViewWeather != null) {
-                        cardViewWeather.setVisibility(View.GONE);
-                    }
-
-                    if (errorLayout != null) {
-                        errorLayout.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                if (buttonTryAgain != null) {
-                    buttonTryAgain.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            showLoadingView();
-
-                            WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
-                                @Override
-                                public void onWeatherFinishedUpdating() {
-                                    hideLoadingView();
-                                }
-
-                                @Override
-                                public void onWeatherUpdateError(String errorMessage) {
-                                    showErrorView(errorMessage);
-                                }
-                            });
+                    // If there hasn't been any weather info saved to the DB, show the error card view
+                    if (currentWeatherInfo == null || currentWeatherInfo.getTemperature() == null) {
+                        if (cardViewWeather != null) {
+                            cardViewWeather.setVisibility(View.GONE);
                         }
-                    });
+
+                        if (errorLayout != null) {
+                            errorLayout.setVisibility(View.VISIBLE);
+                        }
+                    }
+
+                    if (buttonTryAgain != null) {
+                        buttonTryAgain.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+
+                                showLoadingView();
+
+                                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                                    @Override
+                                    public void onWeatherFinishedUpdating() {
+                                        hideLoadingView();
+                                    }
+
+                                    @Override
+                                    public void onWeatherUpdateError(String errorMessage) {
+                                        showErrorView(errorMessage);
+                                    }
+                                });
+                            }
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     private void setWeatherInfo() {
