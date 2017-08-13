@@ -31,7 +31,7 @@ import co.eventcloud.capetownweather.weather.WeatherBroadcastReceiver;
 public class MainActivity extends AppCompatActivity {
 
     /**
-     * The key to use when saving activity's scroll state
+     * The key to use when saving activity's scroll state. This is used by the fragments containing recycler viewsß
      */
     public static final String SCROLL_STATE_KEY = "scroll_state";
 
