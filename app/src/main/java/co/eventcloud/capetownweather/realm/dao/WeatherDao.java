@@ -10,9 +10,10 @@ import co.eventcloud.capetownweather.realm.model.RealmDayWeatherInfo;
 import co.eventcloud.capetownweather.realm.model.RealmHourInfo;
 import co.eventcloud.capetownweather.realm.model.RealmWeekWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.CurrentWeatherInfo;
-import co.eventcloud.capetownweather.weather.model.HourInfo;
-import co.eventcloud.capetownweather.weather.model.DayWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.DayInfo;
+import co.eventcloud.capetownweather.weather.model.DayWeatherInfo;
+import co.eventcloud.capetownweather.weather.model.HourInfo;
+import co.eventcloud.capetownweather.weather.model.WeatherInfo;
 import co.eventcloud.capetownweather.weather.model.WeekWeatherInfo;
 import io.realm.Realm;
 import io.realm.RealmList;
@@ -25,6 +26,16 @@ import io.realm.RealmList;
  */
 
 public class WeatherDao {
+
+    /**
+     * Saves all the info about the weather to the database
+     * @param weatherInfo the weather info API object
+     */
+    public static void saveWeatherInfo(WeatherInfo weatherInfo) {
+        WeatherDao.saveCurrentWeather(weatherInfo.getCurrentWeatherInfo());
+        WeatherDao.saveWeekWeatherInfo(weatherInfo.getWeekWeatherInfo());
+        WeatherDao.saveDayWeatherInfo(weatherInfo.getDayWeatherInfo());
+    }
 
     /**
      * Saves the current weather info object to the DB

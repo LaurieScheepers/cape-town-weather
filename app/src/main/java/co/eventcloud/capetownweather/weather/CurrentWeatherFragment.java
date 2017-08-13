@@ -34,7 +34,7 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.R;
-import co.eventcloud.capetownweather.network.WeatherRetriever;
+import co.eventcloud.capetownweather.manager.WeatherManager;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
 import co.eventcloud.capetownweather.realm.model.RealmCurrentWeatherInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
@@ -123,7 +123,7 @@ public class CurrentWeatherFragment extends Fragment {
             public void onRefresh() {
                 showLoadingView();
 
-                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                WeatherManager.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
                     public void onWeatherFinishedUpdating() {
                         hideLoadingView();
@@ -228,7 +228,7 @@ public class CurrentWeatherFragment extends Fragment {
 
                                 showLoadingView();
 
-                                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                                WeatherManager.getWeather(getContext(), new WeatherUpdateListener() {
                                     @Override
                                     public void onWeatherFinishedUpdating() {
                                         hideLoadingView();

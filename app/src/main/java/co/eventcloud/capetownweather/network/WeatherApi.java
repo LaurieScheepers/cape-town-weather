@@ -13,7 +13,7 @@ import retrofit2.http.Query;
  * Created by Laurie on 2017/08/10.
  */
 
-interface WeatherApi {
+public interface WeatherApi {
 
     /**
      * Gets the weather from darksky.net API, using Eventcloud's proxy.

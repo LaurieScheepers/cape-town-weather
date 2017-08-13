@@ -28,7 +28,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import co.eventcloud.capetownweather.R;
-import co.eventcloud.capetownweather.network.WeatherRetriever;
+import co.eventcloud.capetownweather.manager.WeatherManager;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
 import co.eventcloud.capetownweather.realm.model.RealmDayWeatherInfo;
 import co.eventcloud.capetownweather.utils.IconUtil;
@@ -93,8 +93,8 @@ public class HourlyWeatherFragment extends Fragment {
             // and we are using adapters based on Realm data which will be automatically updated
             // when the underlying data changes, so there's little chance of not getting the data (only if ALL the requests fail will we have no data).
             // The flag is checked to avoid multiple simultaneous requests.
-            if (!WeatherRetriever.busyGettingWeatherFromApi) {
-                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+            if (!WeatherManager.busyGettingWeatherFromApi) {
+                WeatherManager.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
                     public void onWeatherFinishedUpdating() {
                         // Get the updated weather info in the DB
@@ -129,7 +129,7 @@ public class HourlyWeatherFragment extends Fragment {
         swipeToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                WeatherManager.getWeather(getContext(), new WeatherUpdateListener() {
                     @Override
                     public void onWeatherFinishedUpdating() {
                         swipeToRefresh.setRefreshing(false);
@@ -194,7 +194,7 @@ public class HourlyWeatherFragment extends Fragment {
                                 swipeToRefresh.setRefreshing(true);
                             }
 
-                            WeatherRetriever.getWeather(getContext(), new WeatherUpdateListener() {
+                            WeatherManager.getWeather(getContext(), new WeatherUpdateListener() {
                                 @Override
                                 public void onWeatherFinishedUpdating() {
                                     if (errorLayout != null) {
@@ -238,9 +238,9 @@ public class HourlyWeatherFragment extends Fragment {
                 @Override
                 public void run() {
                     if (dayWeatherInfo == null) {
-                        if (!WeatherRetriever.busyGettingWeatherFromApi) {
+                        if (!WeatherManager.busyGettingWeatherFromApi) {
                             swipeToRefresh.setRefreshing(true);
-                            WeatherRetriever.getWeather(getContext(), null);
+                            WeatherManager.getWeather(getContext(), null);
                         }
 
                         return;

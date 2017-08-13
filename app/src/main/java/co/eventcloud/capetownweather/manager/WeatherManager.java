@@ -1,4 +1,4 @@
-package co.eventcloud.capetownweather.network;
+package co.eventcloud.capetownweather.manager;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -8,34 +8,27 @@ import org.greenrobot.eventbus.EventBus;
 
 import co.eventcloud.capetownweather.BuildConfig;
 import co.eventcloud.capetownweather.R;
+import co.eventcloud.capetownweather.network.RestClient;
+import co.eventcloud.capetownweather.network.WeatherApi;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
-import co.eventcloud.capetownweather.weather.WeatherService;
 import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdateErrorEvent;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import co.eventcloud.capetownweather.weather.model.CurrentWeatherInfo;
 import co.eventcloud.capetownweather.weather.model.WeatherInfo;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
-import static co.eventcloud.capetownweather.weather.WeatherService.HIGH_TEMP_BOUNDARY;
-
 /**
- * Contains helper methods related to retrieving the weather from the API
+ * The Weather manager. This class is responsible for making API calls
  *
  * <p/>
  * Created by Laurie on 2017/08/10.
  */
 
-public class WeatherRetriever {
-
-    private static final String BASE_URL = BuildConfig.API_URL;
+public class WeatherManager {
 
     /**
      * Flag indicating that the app is busy with an API request to get the weather
@@ -56,23 +49,7 @@ public class WeatherRetriever {
 
         Timber.d("Getting weather from API");
 
-        // Create a logging interceptor (to show detailed logs about the request and response).
-        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(loggingInterceptor)
-                .build();
-
-        // Create the retrofit instance
-        Retrofit retrofit = new Retrofit.Builder()
-                .client(client)
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // Create the API object
-        WeatherApi weatherApi = retrofit.create(WeatherApi.class);
+        WeatherApi weatherApi = RestClient.getClient().getWeatherApi();
 
         // Create the API call
         Call<WeatherInfo> call = weatherApi.getWeather(BuildConfig.API_KEY, latitude, longitude, exclude, units, delay, chaos);
@@ -82,7 +59,7 @@ public class WeatherRetriever {
     }
 
     /**
-     * Helper method to do the GET weather API call. This method handles the API response and the updating of the database.
+     * Helper method to do the GET weather API call.
      * @param context the Context to use
      * @param listener a WeatherUpdateListener that will fire a callback once the update is complete
      * @param delay the delay in seconds before the response is sent by the server
@@ -92,7 +69,7 @@ public class WeatherRetriever {
         busyGettingWeatherFromApi = true;
 
         // Get Weather from the API
-        WeatherRetriever.getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", delay, chaos, new Callback<WeatherInfo>() {
+        getWeather(BuildConfig.CAPE_TOWN_LATITUDE, BuildConfig.CAPE_TOWN_LONGITUDE, "minutely", "si", delay, chaos, new Callback<WeatherInfo>() {
             @Override
             public void onResponse(@NonNull Call<WeatherInfo> call, @NonNull Response<WeatherInfo> response) {
                 busyGettingWeatherFromApi = false;
@@ -107,9 +84,7 @@ public class WeatherRetriever {
                         int currentTemp = currentWeatherInfo.getTemperature().intValue();
 
                         // Save the weather information to the DB
-                        WeatherDao.saveCurrentWeather(currentWeatherInfo);
-                        WeatherDao.saveWeekWeatherInfo(weatherInfo.getWeekWeatherInfo());
-                        WeatherDao.saveDayWeatherInfo(weatherInfo.getDayWeatherInfo());
+                        WeatherDao.saveWeatherInfo(weatherInfo);
 
                         EventBus.getDefault().postSticky(new WeatherInfoUpdatedEvent());
 
@@ -117,12 +92,7 @@ public class WeatherRetriever {
                             listener.onWeatherFinishedUpdating();
                         }
 
-                        // Send notification if temperature has dropped below 15 deg C or risen above 25 deg C
-                        if (currentTemp < WeatherService.LOW_TEMP_BOUNDARY) {
-                            WeatherService.sendColdWarningNotification(context, currentTemp);
-                        } else if (currentTemp > HIGH_TEMP_BOUNDARY) {
-                            WeatherService.sendHotWarningNotification(context, currentTemp);
-                        }
+                        WeatherNotificationManager.sendWeatherWarningNotificationIfNecessary(context, currentTemp);
                     }
                 } else {
                     int statusCode = response.code();
@@ -158,9 +128,9 @@ public class WeatherRetriever {
     }
 
     /**
-     * Helper method to do the GET weather API call. This method also handles the API response and the updating of the database.
+     * Helper method to do the GET weather API call.
      */
     public static void getWeather(final Context context, final WeatherUpdateListener listener) {
-        getWeather(context, listener, BuildConfig.DEBUG ? 3 : 0, BuildConfig.DEBUG ? 0.5f : 0f);
+        getWeather(context, listener, BuildConfig.DEBUG ? 0 : 0, BuildConfig.DEBUG ? 0f : 0f);
     }
 }
