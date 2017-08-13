@@ -1,6 +1,7 @@
 package co.eventcloud.capetownweather.weather;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -26,6 +27,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import co.eventcloud.capetownweather.MainActivity;
 import co.eventcloud.capetownweather.R;
 import co.eventcloud.capetownweather.network.WeatherRetriever;
 import co.eventcloud.capetownweather.realm.dao.WeatherDao;
@@ -36,6 +38,8 @@ import co.eventcloud.capetownweather.weather.callback.WeatherUpdateListener;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdateErrorEvent;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import io.realm.Realm;
+
+import static co.eventcloud.capetownweather.MainActivity.SCROLL_STATE_KEY;
 
 /**
  * Fragment that shows the weather day-by-day
@@ -66,6 +70,10 @@ public class DailyWeatherFragment extends Fragment {
     private RealmWeekWeatherInfo weekWeatherInfo;
 
     private DailyWeatherAdapter adapter;
+
+    private LinearLayoutManager linearLayoutManager;
+
+    private Parcelable scrollState;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -198,9 +206,32 @@ public class DailyWeatherFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Save the restored scroll state
+        if (savedInstanceState != null) {
+            scrollState = savedInstanceState.getParcelable(SCROLL_STATE_KEY);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Restore scroll state
+        if (scrollState != null) {
+            linearLayoutManager.onRestoreInstanceState(scrollState);
+        }
+    }
+
     private void setRecyclerViewAttributes() {
         recyclerView.setHasFixedSize(true); // For better performance
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(linearLayoutManager);
+
         recyclerView.setAdapter(adapter);
     }
 
@@ -293,5 +324,14 @@ public class DailyWeatherFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save scroll state
+        scrollState = linearLayoutManager.onSaveInstanceState();
+        outState.putParcelable(MainActivity.SCROLL_STATE_KEY, scrollState);
     }
 }

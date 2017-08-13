@@ -13,6 +13,7 @@
         android:layout_gravity="center"
         android:layout_margin="@dimen/current_weather_card_margin"
         app:cardCornerRadius="@dimen/current_weather_card_radius"
+        app:contentPadding="@dimen/current_weather_card_margin"
         app:cardElevation="@dimen/current_weather_card_radius">
 
         <RelativeLayout
@@ -76,7 +77,6 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_toLeftOf="@id/realTemp"
-                android:layout_toRightOf="@id/timeSummaryContainer"
                 tools:background="@color/grey_600"
                 android:layout_centerVertical="true"
                 android:layout_margin="12dp"

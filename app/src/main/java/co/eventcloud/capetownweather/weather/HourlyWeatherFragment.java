@@ -1,6 +1,7 @@
 package co.eventcloud.capetownweather.weather;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -37,6 +38,8 @@ import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdateErrorEvent;
 import co.eventcloud.capetownweather.weather.event.WeatherInfoUpdatedEvent;
 import io.realm.Realm;
 
+import static co.eventcloud.capetownweather.MainActivity.SCROLL_STATE_KEY;
+
 /**
  * Fragment that shows the weather hour-by-hour
  *
@@ -67,6 +70,10 @@ public class HourlyWeatherFragment extends Fragment {
     private RealmDayWeatherInfo dayWeatherInfo;
 
     private HourlyWeatherAdapter adapter;
+
+    private LinearLayoutManager linearLayoutManager;
+
+    private Parcelable scrollState;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -137,6 +144,26 @@ public class HourlyWeatherFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        // Save the restored scroll state
+        if (savedInstanceState != null) {
+            scrollState = savedInstanceState.getParcelable(SCROLL_STATE_KEY);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Restore scroll state
+        if (scrollState != null) {
+            linearLayoutManager.onRestoreInstanceState(scrollState);
+        }
+    }
+
     private void showErrorView(final String errorMessage) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
@@ -195,7 +222,10 @@ public class HourlyWeatherFragment extends Fragment {
 
     private void setRecyclerViewAttributes() {
         recyclerView.setHasFixedSize(true); // For better performance
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        linearLayoutManager = new LinearLayoutManager(getActivity());
+
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
     }
 
@@ -288,5 +318,14 @@ public class HourlyWeatherFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // Save scroll state
+        scrollState = linearLayoutManager.onSaveInstanceState();
+        outState.putParcelable(SCROLL_STATE_KEY, scrollState);
     }
 }

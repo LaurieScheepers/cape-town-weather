@@ -31,6 +31,11 @@ import co.eventcloud.capetownweather.weather.WeatherBroadcastReceiver;
 public class MainActivity extends AppCompatActivity {
 
     /**
+     * The key to use when saving activity's scroll state
+     */
+    public static final String SCROLL_STATE_KEY = "scroll_state";
+
+    /**
      * The toolbar showing the title of the app
      */
     @BindView(R.id.toolbar)

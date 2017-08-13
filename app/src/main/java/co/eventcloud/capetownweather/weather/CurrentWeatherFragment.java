@@ -246,99 +246,101 @@ public class CurrentWeatherFragment extends Fragment {
     private void setWeatherInfo() {
         if (currentWeatherInfo != null) {
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // If for some reason the layout is still refreshing but we already have data, stop it
-                    if (swipeToRefreshLayout != null && swipeToRefreshLayout.isRefreshing()) {
-                        swipeToRefreshLayout.setRefreshing(false);
-                    }
-
-                    if (realm != null && realm.isClosed()) {
-                        realm = Realm.getDefaultInstance();
-                    }
-
-                    hideLoadingView();
-
-                    // Time is returned by API as seconds since epoch, convert it to millis
-                    long timeInMillis = currentWeatherInfo.getTime() * 1000L;
-
-                    // Create a date object from the timestamp
-                    Date date = new Date(timeInMillis);
-
-                    // Format the date using English locale and SAST timezone
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
-                    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Africa/Johannesburg"));
-
-                    // Time
-                    if (time != null) {
-                        time.setText(String.format(getString(R.string.time), simpleDateFormat.format(date)));
-                    }
-
-                    // Summmary
-                    if (summary != null) {
-                        summary.setText(currentWeatherInfo.getSummary());
-                        summary.setSelected(true);
-                    }
-
-                    // Real Temp
-                    if (realTemperature != null) {
-                        String temperature = String.format(getString(R.string.temperature), currentWeatherInfo.getTemperature().intValue());
-                        realTemperature.setText(temperature);
-                    }
-
-                    // Apparent Temp
-                    if (apparentTemperature != null) {
-                        String apparentTemperatureString = String.format(getString(R.string.apparentTemperature), currentWeatherInfo.getApparentTemperature().intValue());
-                        apparentTemperature.setText(apparentTemperatureString);
-                    }
-
-                    // Humidity
-                    if (humidity != null) {
-                        final String humidityString = String.format(getString(R.string.humidity), (int) (currentWeatherInfo.getHumidity() * 100));
-                        humidity.setText(humidityString);
-                    }
-
-                    if (precipitation != null) {
-                        // Precipitation
-                        String precipitationString = String.format(getString(R.string.precipitation), (int) (currentWeatherInfo.getPrecipitationProbability() * 100));
-                        precipitation.setText(precipitationString);
-                    }
-
-                    if (windSpeed != null) {
-                        // Wind speed
-                        String windSpeedString = String.format(getString(R.string.windSpeed), (int) (currentWeatherInfo.getWindSpeed() * 3.6));
-                        windSpeed.setText(windSpeedString);
-                    }
-
-                    // Skycon!
-                    if (skyconPlaceholder != null) {
-                        String iconString = currentWeatherInfo.getIcon();
-
-                        final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
-
-                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                        skyconView.setLayoutParams(params);
-
-                        // First remove any views that might be in the placeholder container
-                        if (skyconPlaceholder.getChildCount() > 0) {
-                            skyconPlaceholder.removeAllViews();
+            if (getActivity() != null) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        // If for some reason the layout is still refreshing but we already have data, stop it
+                        if (swipeToRefreshLayout != null && swipeToRefreshLayout.isRefreshing()) {
+                            swipeToRefreshLayout.setRefreshing(false);
                         }
 
-                        // Now add the correct skycon view
-                        skyconPlaceholder.addView(skyconView);
+                        if (realm != null && realm.isClosed()) {
+                            realm = Realm.getDefaultInstance();
+                        }
 
-                        // Finally fade the view in
-                        UiUtil.fadeViewIn(skyconPlaceholder);
-                    }
+                        hideLoadingView();
 
-                    if (!realm.isClosed()) {
-                        realm.close();
+                        // Time is returned by API as seconds since epoch, convert it to millis
+                        long timeInMillis = currentWeatherInfo.getTime() * 1000L;
+
+                        // Create a date object from the timestamp
+                        Date date = new Date(timeInMillis);
+
+                        // Format the date using English locale and SAST timezone
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.ENGLISH);
+                        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("Africa/Johannesburg"));
+
+                        // Time
+                        if (time != null) {
+                            time.setText(String.format(getString(R.string.time), simpleDateFormat.format(date)));
+                        }
+
+                        // Summmary
+                        if (summary != null) {
+                            summary.setText(currentWeatherInfo.getSummary());
+                            summary.setSelected(true);
+                        }
+
+                        // Real Temp
+                        if (realTemperature != null) {
+                            String temperature = String.format(getString(R.string.temperature), currentWeatherInfo.getTemperature().intValue());
+                            realTemperature.setText(temperature);
+                        }
+
+                        // Apparent Temp
+                        if (apparentTemperature != null) {
+                            String apparentTemperatureString = String.format(getString(R.string.apparentTemperature), currentWeatherInfo.getApparentTemperature().intValue());
+                            apparentTemperature.setText(apparentTemperatureString);
+                        }
+
+                        // Humidity
+                        if (humidity != null) {
+                            final String humidityString = String.format(getString(R.string.humidity), (int) (currentWeatherInfo.getHumidity() * 100));
+                            humidity.setText(humidityString);
+                        }
+
+                        if (precipitation != null) {
+                            // Precipitation
+                            String precipitationString = String.format(getString(R.string.precipitation), (int) (currentWeatherInfo.getPrecipitationProbability() * 100));
+                            precipitation.setText(precipitationString);
+                        }
+
+                        if (windSpeed != null) {
+                            // Wind speed
+                            String windSpeedString = String.format(getString(R.string.windSpeed), (int) (currentWeatherInfo.getWindSpeed() * 3.6));
+                            windSpeed.setText(windSpeedString);
+                        }
+
+                        // Skycon!
+                        if (skyconPlaceholder != null) {
+                            String iconString = currentWeatherInfo.getIcon();
+
+                            final SkyconView skyconView = IconUtil.getSkyconView(getContext(), iconString, true);
+
+                            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                            skyconView.setLayoutParams(params);
+
+                            // First remove any views that might be in the placeholder container
+                            if (skyconPlaceholder.getChildCount() > 0) {
+                                skyconPlaceholder.removeAllViews();
+                            }
+
+                            // Now add the correct skycon view
+                            skyconPlaceholder.addView(skyconView);
+
+                            // Finally fade the view in
+                            UiUtil.fadeViewIn(skyconPlaceholder);
+                        }
+
+                        if (!realm.isClosed()) {
+                            realm.close();
+                        }
                     }
-                }
-            });
+                });
+            }
         } else {
             showLoadingView();
         }
