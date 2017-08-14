@@ -148,6 +148,12 @@ public class DailyWeatherFragment extends Fragment {
     }
 
     private void showErrorView(final String errorMessage) {
+        if (unbinder == null) {
+            // If we get here the event has been received before Butterknife has been bound to the views
+            // In this case, simply ignore it
+            return;
+        }
+
         if (swipeToRefresh != null) {
             swipeToRefresh.setRefreshing(false);
         }
@@ -237,6 +243,12 @@ public class DailyWeatherFragment extends Fragment {
                 WeatherManager.getWeather(getContext(), null);
             }
 
+            return;
+        }
+
+        if (unbinder == null) {
+            // If we get here the event has been received before Butterknife has been bound to the views
+            // In this case, simply ignore it
             return;
         }
 

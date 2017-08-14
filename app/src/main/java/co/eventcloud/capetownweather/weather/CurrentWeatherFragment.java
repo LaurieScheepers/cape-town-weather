@@ -182,7 +182,15 @@ public class CurrentWeatherFragment extends Fragment {
     }
 
     private void showErrorView(final String errorMessage) {
-        Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+        if (unbinder == null) {
+            // If we get here the event has been received before Butterknife has been bound to the views
+            // In this case, simply ignore it
+            return;
+        }
+
+        if (getActivity() != null) {
+            Snackbar.make(getActivity().findViewById(android.R.id.content), errorMessage, Snackbar.LENGTH_LONG).show();
+        }
 
         hideLoadingView();
 
@@ -221,6 +229,12 @@ public class CurrentWeatherFragment extends Fragment {
     }
 
     private void setWeatherInfo() {
+        if (unbinder == null) {
+            // If we get here the event has been received before Butterknife has been bound to the views
+            // In this case, simply ignore it
+            return;
+        }
+
         if (currentWeatherInfo != null) {
             // If for some reason the layout is still refreshing but we already have data, stop it
             if (swipeToRefreshLayout != null && swipeToRefreshLayout.isRefreshing()) {
